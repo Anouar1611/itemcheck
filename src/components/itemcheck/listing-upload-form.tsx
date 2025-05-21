@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { UploadCloud, X, Link2 } from 'lucide-react';
+import { UploadCloud, X, Link as LinkIcon } from 'lucide-react'; // Changed Link2 to LinkIcon for clarity
 
 interface ListingUploadFormProps {
   onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
@@ -18,10 +18,10 @@ interface ListingUploadFormProps {
   errors: FieldErrors<any>; 
   isLoading: boolean;
   imagePreview: string | null;
-  setImagePreview: (value: string | null) => void;
+  setImagePreview: (value: string | null) => void; // Kept for potential direct use, though parent handles most
   setImageFile: (file: File | null) => void;
-  currentImageUrl?: string; // The current value in the Image URL input field
-  uploadedFile: File | null; // The actual File object if one is uploaded
+  currentListingUrl?: string; // Changed from currentImageUrl
+  uploadedFile: File | null; 
 }
 
 export function ListingUploadForm({
@@ -32,7 +32,7 @@ export function ListingUploadForm({
   imagePreview,
   setImagePreview,
   setImageFile,
-  currentImageUrl,
+  currentListingUrl, // Changed from currentImageUrl
   uploadedFile,
 }: ListingUploadFormProps) {
   
@@ -40,24 +40,21 @@ export function ListingUploadForm({
     const file = event.target.files?.[0];
     if (file) {
       setImageFile(file);
-      // Preview will be handled by useEffect in parent ItemCheckPageClient
+      // Preview and clearing other fields will be handled by useEffect in parent ItemCheckPageClient
     } else {
-      // If user cancels file selection, only clear if no URL is currently set
-      if (!currentImageUrl) {
+      // If user cancels file selection, only clear if no listing URL is currently set
+      if (!currentListingUrl) {
         setImageFile(null);
-        // setImagePreview(null); // Handled by parent
       }
     }
   };
 
   const clearImage = () => {
     setImageFile(null); // This will trigger parent's useEffect to clear preview and RHF field
-    // setImagePreview(null); // Handled by parent
     const fileInput = document.getElementById('listingImage-file') as HTMLInputElement;
     if (fileInput) {
       fileInput.value = '';
     }
-    // Clearing RHF field 'listingImage' is handled by parent's useEffect when imageFile becomes null
   };
 
   return (
@@ -72,37 +69,34 @@ export function ListingUploadForm({
             <Controller
               name="listingImage" 
               control={control}
-              render={({ fieldState }) => ( // field is not directly used here for input type="file"
+              render={({ fieldState }) => ( 
                 <>
                   <Input
                     id="listingImage-file" 
                     type="file"
                     accept="image/png, image/jpeg, image/webp"
                     onChange={handleImageChange}
-                    className={`file:text-sm file:font-medium file:bg-primary/10 file:text-primary hover:file:bg-primary/20 ${(fieldState.error && !currentImageUrl && !uploadedFile) ? 'border-destructive' : ''}`}
-                    disabled={isLoading || !!currentImageUrl} // Disable if URL is filled
+                    className={`file:text-sm file:font-medium file:bg-primary/10 file:text-primary hover:file:bg-primary/20 ${fieldState.error ? 'border-destructive' : ''}`}
+                    disabled={isLoading || !!currentListingUrl} // Disable if Listing URL is filled
                   />
-                  {/* Error for 'listingImage' field from RHF, shown if it's the root error */}
-                  {fieldState.error && !currentImageUrl && !uploadedFile && <p className="text-sm text-destructive">{fieldState.error.message}</p>}
+                  {fieldState.error && <p className="text-sm text-destructive">{fieldState.error.message}</p>}
                 </>
               )}
             />
-            {imagePreview && (
+            {imagePreview && uploadedFile && ( // Only show preview if it's from an uploaded file
               <div className="mt-4 relative group w-full h-64 border rounded-md overflow-hidden shadow-sm">
-                <Image src={imagePreview} alt="Listing preview" layout="fill" objectFit="contain" data-ai-hint="product image" />
-                {uploadedFile && ( // Show clear button only if the preview is from an uploaded file
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="icon"
-                    className="absolute top-2 right-2 opacity-50 group-hover:opacity-100 transition-opacity"
-                    onClick={clearImage}
-                    disabled={isLoading}
-                    aria-label="Remove image"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                )}
+                <Image src={imagePreview} alt="Listing preview" layout="fill" objectFit="contain" data-ai-hint="product item" />
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="icon"
+                  className="absolute top-2 right-2 opacity-50 group-hover:opacity-100 transition-opacity"
+                  onClick={clearImage}
+                  disabled={isLoading}
+                  aria-label="Remove image"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
               </div>
             )}
           </div>
@@ -112,24 +106,24 @@ export function ListingUploadForm({
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="imageUrl" className="text-base font-medium flex items-center">
-              <Link2 className="w-4 h-4 mr-2" /> Image URL
+            <Label htmlFor="listingUrl" className="text-base font-medium flex items-center">
+              <LinkIcon className="w-4 h-4 mr-2" /> Listing URL (Link to the listing page)
             </Label>
             <Controller
-              name="imageUrl"
+              name="listingUrl" // Changed from imageUrl
               control={control}
               render={({ field, fieldState }) => (
                 <Input
-                  id="imageUrl"
+                  id="listingUrl" // Changed from imageUrl
                   type="url"
-                  placeholder="https://example.com/image.jpg"
+                  placeholder="https://marketplace.com/listing/item-123"
                   className={`${fieldState.error ? 'border-destructive' : ''}`}
                   {...field}
                   disabled={isLoading || !!uploadedFile} // Disable if a file is uploaded
                 />
               )}
             />
-            {errors.imageUrl && <p className="text-sm text-destructive">{errors.imageUrl.message?.toString()}</p>}
+            {errors.listingUrl && <p className="text-sm text-destructive">{errors.listingUrl.message?.toString()}</p>}
           </div>
 
 
@@ -150,6 +144,11 @@ export function ListingUploadForm({
             />
             {errors.description && <p className="text-sm text-destructive">{errors.description.message?.toString()}</p>}
           </div>
+          {/* Combined error message for image/URL requirement */}
+          {errors.listingImage && errors.listingImage.type === 'manual' && (
+             <p className="text-sm text-destructive text-center">{errors.listingImage.message?.toString()}</p>
+          )}
+
 
           <Button type="submit" className="w-full text-lg py-6 bg-accent hover:bg-accent/90 text-accent-foreground" disabled={isLoading}>
             {isLoading ? (

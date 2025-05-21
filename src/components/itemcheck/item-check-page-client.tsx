@@ -10,19 +10,25 @@ import * as z from 'zod';
 import { ListingUploadForm } from './listing-upload-form';
 import { ResultsDashboard } from './results-dashboard';
 import { handleAnalyzeListing } from '@/app/actions';
-import type { AnalyzeListingOutput } from '@/ai/flows/analyze-listing';
+import type { AnalyzeListingOutput } from '@/ai/flows/analyze-listing'; // Will be updated by AI flow change
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button"; // Added Button import
+import { Button } from "@/components/ui/button";
 
+// Updated form schema
 const formSchema = z.object({
-  listingImage: z.any().optional(), // Allow File for upload, or can be null/undefined if URL is used
-  imageUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal("")),
+  listingImage: z.any().optional(), // For File object from upload
+  listingUrl: z.string().url({ message: "Please enter a valid listing URL." }).optional().or(z.literal("")),
   description: z.string().min(20, "Description must be at least 20 characters long."),
-}).refine(data => !!data.listingImage || !!data.imageUrl, {
-  message: "Either an image upload or an image URL is required.",
-  path: ["listingImage"], // You can choose which field to attach the error to, or a general form error
+}).refine(data => {
+  const hasImageFile = !!data.listingImage;
+  const hasListingUrl = !!data.listingUrl && data.listingUrl.trim() !== '';
+  return (hasImageFile || hasListingUrl); // Must have either an image upload or a listing URL
+}, {
+  message: "Either an image upload or a listing URL is required, along with the description.",
+  path: ["listingImage"], // Attach root error to listingImage for display simplicity
 });
+
 
 type FormData = z.infer<typeof formSchema>;
 
@@ -30,68 +36,68 @@ export default function ItemCheckPageClient() {
   const [analysisResult, setAnalysisResult] = useState<AnalyzeListingOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null); // For uploaded image preview
   const [imageFile, setImageFile] = useState<File | null>(null);
   const { toast } = useToast();
 
-  const { control, handleSubmit, formState: { errors }, reset, setValue, trigger, watch } = useForm<FormData>({
+  const { control, handleSubmit, formState: { errors }, reset, setValue, trigger, watch, setError: setFormError } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       description: "",
       listingImage: null,
-      imageUrl: "",
+      listingUrl: "", // Changed from imageUrl
     },
   });
 
-  const watchedImageUrl = watch("imageUrl");
-  const watchedListingImage = watch("listingImage"); // This will be the File object or null
+  const watchedListingUrl = watch("listingUrl"); // Changed from imageUrl
+  const watchedListingImage = watch("listingImage"); // This is the File object from RHF
 
   useEffect(() => {
-    // When imageFile (File object from upload) changes
+    // When imageFile (File object from manual input) changes
     if (imageFile) {
-      setValue('listingImage', imageFile, { shouldValidate: true }); // Set RHF value for validation
-      setValue('imageUrl', '', { shouldValidate: true }); // Clear URL if file is added
-      setImagePreview(URL.createObjectURL(imageFile)); // Create preview for uploaded file
+      setValue('listingImage', imageFile, { shouldValidate: true }); // Set RHF value
+      setValue('listingUrl', '', { shouldValidate: true }); // Clear listingUrl if file is added
+      const newPreview = URL.createObjectURL(imageFile);
+      setImagePreview(newPreview); // Create preview for uploaded file
+      // No need to clear listingUrl input visually here, RHF takes care of it via setValue
     } else {
-      // If imageFile is cleared (e.g., by user removing it)
+      // If imageFile is cleared (e.g., by user or by setting listingUrl)
       setValue('listingImage', null, { shouldValidate: true });
-      if (!watchedImageUrl) { // Only clear preview if no URL is set
-        setImagePreview(null);
+      // Only clear preview if no listingUrl is ALSO set to take over preview
+      if (!watchedListingUrl) { // If listing URL is also empty, clear preview
+         setImagePreview(null);
       }
     }
-    // Trigger validation for both fields when imageFile changes
     trigger('listingImage');
-    trigger('imageUrl');
+    trigger('listingUrl');
 
     // Cleanup object URL
+    let currentPreview = imagePreview;
     return () => {
-        if (imagePreview && imagePreview.startsWith('blob:')) {
-            URL.revokeObjectURL(imagePreview);
+        if (currentPreview && currentPreview.startsWith('blob:')) {
+            URL.revokeObjectURL(currentPreview);
         }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [imageFile, setValue, trigger]); // Removed imagePreview from deps to avoid re-runs from its own update
+  }, [imageFile, setValue, trigger]);
+
 
   useEffect(() => {
-    // When watchedImageUrl (URL input string) changes
-    if (watchedImageUrl) {
-      setImageFile(null); // Clear any uploaded file
+    // When watchedListingUrl (URL input string) changes
+    if (watchedListingUrl) {
+      setImageFile(null); // Clear any uploaded file state
       setValue('listingImage', null, {shouldValidate: true}); // Clear RHF value for file upload
-      setImagePreview(watchedImageUrl); // Set preview to the URL
-      // Clear file input visually
+      setImagePreview(null); // Listing URL does not generate a preview in this component
+      
+      // Clear file input visually if it had a value
       const fileInput = document.getElementById('listingImage-file') as HTMLInputElement;
-      if (fileInput) fileInput.value = '';
-    } else {
-        // If URL is cleared, and no file is uploaded, clear preview
-        if (!imageFile) {
-            setImagePreview(null);
-        }
+      if (fileInput && fileInput.value) fileInput.value = '';
     }
-    // Trigger validation for both fields when imageUrl changes
+    // No else needed: if listingUrl is cleared, imageFile useEffect will handle preview if imageFile exists
     trigger('listingImage');
-    trigger('imageUrl');
+    trigger('listingUrl');
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watchedImageUrl, setValue, trigger]); // Removed imageFile from deps to avoid circular updates
+  }, [watchedListingUrl, setValue, trigger]);
 
 
   const onSubmit = async (data: FormData) => {
@@ -99,15 +105,31 @@ export default function ItemCheckPageClient() {
     setError(null);
     setAnalysisResult(null);
 
-    let imagePayload: string | undefined = undefined;
+    // Check refinement at submit time too for clarity, though Zod should catch it
+    const hasImageFile = !!imageFile; // imageFile is our source of truth for upload
+    const hasListingUrl = !!data.listingUrl && data.listingUrl.trim() !== '';
 
-    if (imageFile) {
+    if (!data.description) {
+        setFormError("description", { type: "manual", message: "Description is required."});
+        setIsLoading(false);
+        return;
+    }
+    if (!hasImageFile && !hasListingUrl) {
+        setFormError("listingImage", { type: "manual", message: "Either an image upload or a listing URL is required."});
+        setIsLoading(false);
+        return;
+    }
+
+
+    let imagePayloadForApi: string | undefined = undefined;
+
+    if (imageFile) { // Prioritize uploaded file for the 'image' parameter to AI
       try {
-        imagePayload = await new Promise((resolve, reject) => {
+        imagePayloadForApi = await new Promise((resolve, reject) => {
           const reader = new FileReader();
           reader.readAsDataURL(imageFile);
           reader.onloadend = () => resolve(reader.result as string);
-          reader.onerror = () => reject(new Error("Failed to read image file."));
+          reader.onerror = (err) => reject(new Error("Failed to read image file."));
         });
       } catch (e: any) {
         setError(e.message);
@@ -115,20 +137,12 @@ export default function ItemCheckPageClient() {
         setIsLoading(false);
         return;
       }
-    } else if (data.imageUrl) {
-      imagePayload = data.imageUrl;
-    }
-
-    if (!imagePayload) {
-      setError("Please provide an image (upload or URL).");
-      toast({ title: "Image Required", description: "Please provide an image by uploading or entering a URL.", variant: "destructive" });
-      setIsLoading(false);
-      return;
     }
 
     try {
       const result = await handleAnalyzeListing({
-        image: imagePayload,
+        image: imagePayloadForApi, // This will be undefined if no file was uploaded
+        listingUrl: data.listingUrl || undefined, // Pass listingUrl if provided
         description: data.description,
       });
       setAnalysisResult(result);
@@ -150,15 +164,13 @@ export default function ItemCheckPageClient() {
   };
 
   const handleReset = () => {
-    reset();
-    setImageFile(null); // This will trigger useEffect to clear listingImage in RHF and preview
-    // setImagePreview(null); // No longer needed here, handled by useEffect
-    // setValue('imageUrl', ''); // Already handled by reset()
+    reset(); // Resets RHF fields
+    setImageFile(null); // Clears image file state, triggers useEffect to clear preview
     setAnalysisResult(null);
     setError(null);
     setIsLoading(false);
     const fileInput = document.getElementById('listingImage-file') as HTMLInputElement;
-    if (fileInput) fileInput.value = '';
+    if (fileInput) fileInput.value = ''; // Ensure visual file input is cleared
   };
 
   return (
@@ -170,10 +182,10 @@ export default function ItemCheckPageClient() {
           errors={errors}
           isLoading={isLoading}
           imagePreview={imagePreview}
-          setImagePreview={setImagePreview} // Still needed for direct manipulation if any
+          setImagePreview={setImagePreview} 
           setImageFile={setImageFile}
-          currentImageUrl={watchedImageUrl} // Value of the URL input field
-          uploadedFile={imageFile} // The actual File object
+          currentListingUrl={watchedListingUrl} 
+          uploadedFile={imageFile} 
         />
 
         {isLoading && (
@@ -185,13 +197,13 @@ export default function ItemCheckPageClient() {
             </div>
           </div>
         )}
-
-        {errors.listingImage && !watchedImageUrl && !imageFile && ( // Show root error if both are missing
+        
+        {/* Display root error from Zod refine if it exists and is for listingImage */}
+        {errors.listingImage && errors.listingImage.type !== 'required' && (
             <div className="mt-4 text-center p-3 bg-destructive/10 text-destructive border border-destructive rounded-md">
                 <p className="text-sm font-medium">{errors.listingImage.message?.toString()}</p>
             </div>
         )}
-
 
         {error && (
           <div className="mt-8 text-center p-4 bg-destructive/10 text-destructive border border-destructive rounded-md">
