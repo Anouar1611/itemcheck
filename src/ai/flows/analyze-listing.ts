@@ -17,7 +17,7 @@ const AnalyzeListingInputSchema = z.object({
   image: z
     .string()
     .describe(
-      'The image of the listing as a data URI that must include a MIME type and use Base64 encoding. Expected format: \'data:<mimetype>;base64,<encoded_data>\'.'
+      "The image of the listing as a data URI (e.g., 'data:image/jpeg;base64,ASI...') or a publicly accessible HTTPS URL."
     ),
   description: z.string().describe('The description of the listing.'),
 });

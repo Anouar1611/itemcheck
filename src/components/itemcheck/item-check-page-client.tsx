@@ -6,7 +6,6 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { ScanSearch } from 'lucide-react';
 
 import { ListingUploadForm } from './listing-upload-form';
 import { ResultsDashboard } from './results-dashboard';
@@ -14,12 +13,15 @@ import { handleAnalyzeListing } from '@/app/actions';
 import type { AnalyzeListingOutput } from '@/ai/flows/analyze-listing';
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button"; // Added Button import
 
 const formSchema = z.object({
-  listingImage: z.any().refine(value => value instanceof File || typeof value === 'string', { // Allow File for initial upload, string if pre-filled
-    message: "Listing image is required.",
-  }).or(z.instanceof(File)),
+  listingImage: z.any().optional(), // Allow File for upload, or can be null/undefined if URL is used
+  imageUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal("")),
   description: z.string().min(20, "Description must be at least 20 characters long."),
+}).refine(data => !!data.listingImage || !!data.imageUrl, {
+  message: "Either an image upload or an image URL is required.",
+  path: ["listingImage"], // You can choose which field to attach the error to, or a general form error
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -32,57 +34,108 @@ export default function ItemCheckPageClient() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const { toast } = useToast();
 
-  const { control, handleSubmit, formState: { errors }, reset, setValue, trigger } = useForm<FormData>({
+  const { control, handleSubmit, formState: { errors }, reset, setValue, trigger, watch } = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       description: "",
       listingImage: null,
+      imageUrl: "",
     },
   });
 
+  const watchedImageUrl = watch("imageUrl");
+  const watchedListingImage = watch("listingImage"); // This will be the File object or null
+
   useEffect(() => {
-    // For react-hook-form, file input needs to be handled specially
-    // We set the value for validation purposes and clear it if needed
-    setValue('listingImage', imageFile); 
-    if(imageFile) trigger('listingImage'); // Trigger validation if file is set
-  }, [imageFile, setValue, trigger]);
+    // When imageFile (File object from upload) changes
+    if (imageFile) {
+      setValue('listingImage', imageFile, { shouldValidate: true }); // Set RHF value for validation
+      setValue('imageUrl', '', { shouldValidate: true }); // Clear URL if file is added
+      setImagePreview(URL.createObjectURL(imageFile)); // Create preview for uploaded file
+    } else {
+      // If imageFile is cleared (e.g., by user removing it)
+      setValue('listingImage', null, { shouldValidate: true });
+      if (!watchedImageUrl) { // Only clear preview if no URL is set
+        setImagePreview(null);
+      }
+    }
+    // Trigger validation for both fields when imageFile changes
+    trigger('listingImage');
+    trigger('imageUrl');
+
+    // Cleanup object URL
+    return () => {
+        if (imagePreview && imagePreview.startsWith('blob:')) {
+            URL.revokeObjectURL(imagePreview);
+        }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [imageFile, setValue, trigger]); // Removed imagePreview from deps to avoid re-runs from its own update
+
+  useEffect(() => {
+    // When watchedImageUrl (URL input string) changes
+    if (watchedImageUrl) {
+      setImageFile(null); // Clear any uploaded file
+      setValue('listingImage', null, {shouldValidate: true}); // Clear RHF value for file upload
+      setImagePreview(watchedImageUrl); // Set preview to the URL
+      // Clear file input visually
+      const fileInput = document.getElementById('listingImage-file') as HTMLInputElement;
+      if (fileInput) fileInput.value = '';
+    } else {
+        // If URL is cleared, and no file is uploaded, clear preview
+        if (!imageFile) {
+            setImagePreview(null);
+        }
+    }
+    // Trigger validation for both fields when imageUrl changes
+    trigger('listingImage');
+    trigger('imageUrl');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watchedImageUrl, setValue, trigger]); // Removed imageFile from deps to avoid circular updates
 
 
   const onSubmit = async (data: FormData) => {
-    if (!imageFile) {
-      setError("Please upload an image.");
-      toast({
-        title: "Image Required",
-        description: "Please upload an image for analysis.",
-        variant: "destructive",
-      });
-      // Manually set error for image if not handled by zod resolver for file object
-      setValue('listingImage', null, { shouldValidate: true });
-      return;
-    }
-
     setIsLoading(true);
     setError(null);
     setAnalysisResult(null);
 
+    let imagePayload: string | undefined = undefined;
+
+    if (imageFile) {
+      try {
+        imagePayload = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(imageFile);
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.onerror = () => reject(new Error("Failed to read image file."));
+        });
+      } catch (e: any) {
+        setError(e.message);
+        toast({ title: "Image Read Error", description: e.message, variant: "destructive" });
+        setIsLoading(false);
+        return;
+      }
+    } else if (data.imageUrl) {
+      imagePayload = data.imageUrl;
+    }
+
+    if (!imagePayload) {
+      setError("Please provide an image (upload or URL).");
+      toast({ title: "Image Required", description: "Please provide an image by uploading or entering a URL.", variant: "destructive" });
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const reader = new FileReader();
-      reader.readAsDataURL(imageFile);
-      reader.onloadend = async () => {
-        const imageDataUri = reader.result as string;
-        const result = await handleAnalyzeListing({
-          image: imageDataUri,
-          description: data.description,
-        });
-        setAnalysisResult(result);
-        toast({
-          title: "Analysis Complete",
-          description: "Listing analysis finished successfully.",
-        });
-      };
-      reader.onerror = () => {
-        throw new Error("Failed to read image file.");
-      };
+      const result = await handleAnalyzeListing({
+        image: imagePayload,
+        description: data.description,
+      });
+      setAnalysisResult(result);
+      toast({
+        title: "Analysis Complete",
+        description: "Listing analysis finished successfully.",
+      });
     } catch (e: any) {
       const errorMessage = e.message || "An unexpected error occurred.";
       setError(errorMessage);
@@ -98,31 +151,29 @@ export default function ItemCheckPageClient() {
 
   const handleReset = () => {
     reset();
-    setImagePreview(null);
-    setImageFile(null);
+    setImageFile(null); // This will trigger useEffect to clear listingImage in RHF and preview
+    // setImagePreview(null); // No longer needed here, handled by useEffect
+    // setValue('imageUrl', ''); // Already handled by reset()
     setAnalysisResult(null);
     setError(null);
     setIsLoading(false);
+    const fileInput = document.getElementById('listingImage-file') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="py-6 px-4 md:px-6 border-b border-border shadow-sm sticky top-0 bg-background/80 backdrop-blur-md z-50">
-        <div className="container mx-auto flex items-center gap-3">
-          <ScanSearch className="h-10 w-10 text-primary" />
-          <h1 className="text-3xl font-bold tracking-tight">ItemCheck AI</h1>
-        </div>
-      </header>
-
-      <main className="flex-grow container mx-auto px-4 md:px-6 py-8 md:py-12">
+    <div className="min-h-full flex flex-col">
+      <div className="flex-grow container mx-auto px-4 md:px-6 py-8 md:py-12">
         <ListingUploadForm
           onSubmit={handleSubmit(onSubmit)}
           control={control}
           errors={errors}
           isLoading={isLoading}
           imagePreview={imagePreview}
-          setImagePreview={setImagePreview}
+          setImagePreview={setImagePreview} // Still needed for direct manipulation if any
           setImageFile={setImageFile}
+          currentImageUrl={watchedImageUrl} // Value of the URL input field
+          uploadedFile={imageFile} // The actual File object
         />
 
         {isLoading && (
@@ -131,11 +182,16 @@ export default function ItemCheckPageClient() {
             <div className="grid md:grid-cols-2 gap-8">
               <CardSkeleton />
               <CardSkeleton />
-              <CardSkeleton />
-              <CardSkeleton />
             </div>
           </div>
         )}
+
+        {errors.listingImage && !watchedImageUrl && !imageFile && ( // Show root error if both are missing
+            <div className="mt-4 text-center p-3 bg-destructive/10 text-destructive border border-destructive rounded-md">
+                <p className="text-sm font-medium">{errors.listingImage.message?.toString()}</p>
+            </div>
+        )}
+
 
         {error && (
           <div className="mt-8 text-center p-4 bg-destructive/10 text-destructive border border-destructive rounded-md">
@@ -153,13 +209,7 @@ export default function ItemCheckPageClient() {
             </div>
           </>
         )}
-      </main>
-      
-      <footer className="py-6 px-4 md:px-6 border-t border-border mt-auto">
-        <div className="container mx-auto text-center text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} ItemCheck AI. All rights reserved.
-        </div>
-      </footer>
+      </div>
     </div>
   );
 }
