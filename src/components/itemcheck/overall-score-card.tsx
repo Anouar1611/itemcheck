@@ -2,7 +2,7 @@
 // TODO: Fix types
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Target } from "lucide-react"; // Using Target for "Overall Score" or "Insight Focus"
+import { Target } from "lucide-react"; 
 import type { AnalyzeListingOutput } from "@/ai/flows/analyze-listing";
 
 interface OverallScoreCardProps {
@@ -13,27 +13,22 @@ export function OverallScoreCard({ analysisResult }: OverallScoreCardProps) {
   const { listingQuality, sellerReliability } = analysisResult;
   const overallScore = Math.round((listingQuality.qualityScore + sellerReliability.reliabilityScore) / 2);
 
-  let scoreColorClass = "text-primary"; // Default color
-  if (overallScore >= 75) {
-    scoreColorClass = "text-green-500";
-  } else if (overallScore >= 50) {
-    scoreColorClass = "text-yellow-500";
-  } else {
-    scoreColorClass = "text-red-500";
-  }
-  
-  let progressColorClass = "[&>div]:bg-primary"; // Default color
-  if (overallScore >= 75) {
-    progressColorClass = "[&>div]:bg-green-500";
-  } else if (overallScore >= 50) {
-    progressColorClass = "[&>div]:bg-yellow-500";
-  } else {
-    progressColorClass = "[&>div]:bg-red-500";
-  }
+  let scoreColorClass = "text-foreground"; 
+  let progressColorClass = "[&>div]:bg-foreground"; 
 
+  if (overallScore >= 75) {
+    scoreColorClass = "text-primary";
+    progressColorClass = "[&>div]:bg-primary";
+  } else if (overallScore >= 50) {
+    scoreColorClass = "text-accent"; // Using accent for medium scores
+    progressColorClass = "[&>div]:bg-accent";
+  } else {
+    scoreColorClass = "text-destructive";
+    progressColorClass = "[&>div]:bg-destructive";
+  }
 
   return (
-    <Card className="shadow-xl bg-card border-2 border-primary/50">
+    <Card className="shadow-xl bg-card border-2 border-primary/30">
       <CardHeader className="text-center">
         <div className="flex items-center justify-center space-x-3 mb-2">
           <Target className={`h-10 w-10 ${scoreColorClass}`} />

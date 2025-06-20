@@ -30,14 +30,14 @@ export function QualityCard({ qualityData }: QualityCardProps) {
         
         {qualityData.qualityAssessment && (
           <div>
-            <h4 className="font-semibold text-md mb-1 flex items-center"><Zap className="w-5 h-5 mr-2 text-yellow-500"/>Assessment</h4>
+            <h4 className="font-semibold text-md mb-1 flex items-center"><Zap className="w-5 h-5 mr-2 text-accent"/>Assessment</h4>
             <p className="text-sm text-foreground/80 bg-secondary/50 p-3 rounded-md">{qualityData.qualityAssessment}</p>
           </div>
         )}
 
         {qualityData.suggestions && (
           <div>
-            <h4 className="font-semibold text-md mb-1 flex items-center"><Lightbulb className="w-5 h-5 mr-2 text-green-500"/>Suggestions for Improvement</h4>
+            <h4 className="font-semibold text-md mb-1 flex items-center"><Lightbulb className="w-5 h-5 mr-2 text-primary"/>Suggestions for Improvement</h4>
             <p className="text-sm text-foreground/80 bg-secondary/50 p-3 rounded-md">{qualityData.suggestions}</p>
           </div>
         )}

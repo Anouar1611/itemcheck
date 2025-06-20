@@ -58,7 +58,7 @@ export default function PricingPage() {
 
       <div className="grid md:grid-cols-3 gap-8">
         {pricingTiers.map((tier) => (
-          <Card key={tier.name} className={`flex flex-col shadow-lg ${tier.popular ? 'border-primary border-2 relative' : ''}`}>
+          <Card key={tier.name} className={`flex flex-col shadow-lg ${tier.popular ? 'border-primary border-2 relative' : 'border-border'}`}>
             {tier.popular && (
               <div className="absolute top-0 right-0 -mt-3 mr-3">
                 <span className="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-primary text-primary-foreground">
@@ -78,7 +78,7 @@ export default function PricingPage() {
               <ul className="space-y-3">
                 {tier.features.map((feature) => (
                   <li key={feature} className="flex items-start">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <CheckCircle className="h-5 w-5 text-primary mr-2 mt-0.5 flex-shrink-0" />
                     <span className="text-sm">{feature}</span>
                   </li>
                 ))}
