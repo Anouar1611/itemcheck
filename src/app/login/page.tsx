@@ -1,18 +1,18 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { auth } from "@/lib/firebase"; // Import Firebase auth
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebase"; 
+import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
+import { SidebarInset } from "@/components/ui/sidebar";
 
-// If FaFacebook is not available or you prefer an SVG:
 const FacebookIcon = () => (
   <svg
     className="mr-2 h-5 w-5"
@@ -36,13 +36,22 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        router.push("/"); // Redirect if already logged in
+      }
+    });
+    return () => unsubscribe();
+  }, [router]);
+
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
       toast({ title: "Login Successful", description: "Welcome back!" });
-      router.push("/"); // Redirect to homepage or dashboard
+      router.push("/"); 
     } catch (error: any) {
       console.error("Login error:", error);
       toast({
@@ -56,74 +65,78 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-10rem)] py-12 px-4">
-      <Card className="w-full max-w-md shadow-xl">
-        <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold">Welcome Back!</CardTitle>
-          <CardDescription>Sign in to access your account and analysis history.</CardDescription>
-        </CardHeader>
-        <form onSubmit={handleLogin}>
-          <CardContent className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-            <div className="flex items-center justify-between">
-              <Link href="#" className="text-sm text-primary hover:underline">
-                Forgot password?
-              </Link>
-            </div>
-          </CardContent>
-          <CardFooter className="flex flex-col gap-4">
-            <Button className="w-full text-lg py-6" type="submit" disabled={isLoading}>
-              {isLoading ? "Signing In..." : "Sign In"}
-            </Button>
-            
-            <div className="relative my-2">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
+    <SidebarInset>
+      <div className="flex items-center justify-center min-h-full py-12 px-4">
+        <Card className="w-full max-w-md shadow-xl bg-card border-border">
+          <CardHeader className="text-center">
+            <CardTitle className="text-3xl font-bold text-card-foreground">Welcome Back!</CardTitle>
+            <CardDescription className="text-muted-foreground">Sign in to access your account and analysis history.</CardDescription>
+          </CardHeader>
+          <form onSubmit={handleLogin}>
+            <CardContent className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-card-foreground">Email Address</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={isLoading}
+                  className="bg-input text-foreground border-border focus:ring-ring"
+                />
               </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  Or continue with
-                </span>
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-card-foreground">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={isLoading}
+                  className="bg-input text-foreground border-border focus:ring-ring"
+                />
               </div>
-            </div>
+              <div className="flex items-center justify-between">
+                <Link href="#" className="text-sm text-primary hover:underline">
+                  Forgot password?
+                </Link>
+              </div>
+            </CardContent>
+            <CardFooter className="flex flex-col gap-4">
+              <Button className="w-full text-lg py-6" type="submit" disabled={isLoading}>
+                {isLoading ? "Signing In..." : "Sign In"}
+              </Button>
+              
+              <div className="relative my-2">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-border" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-card px-2 text-muted-foreground">
+                    Or continue with
+                  </span>
+                </div>
+              </div>
 
-            <Button variant="outline" className="w-full text-lg py-6" type="button" disabled={isLoading}>
-              <FacebookIcon />
-              Sign in with Facebook
-            </Button>
-            
-            <p className="text-center text-sm text-muted-foreground mt-4">
-              Don&apos;t have an account?{" "}
-              <Link href="/signup" className="font-medium text-primary hover:underline">
-                Sign Up
-              </Link>
-            </p>
-          </CardFooter>
-        </form>
-      </Card>
-    </div>
+              <Button variant="outline" className="w-full text-lg py-6 border-border hover:bg-muted" type="button" disabled={isLoading}>
+                <FacebookIcon />
+                Sign in with Facebook
+              </Button>
+              
+              <p className="text-center text-sm text-muted-foreground mt-4">
+                Don&apos;t have an account?{" "}
+                <Link href="/signup" className="font-medium text-primary hover:underline">
+                  Sign Up
+                </Link>
+              </p>
+            </CardFooter>
+          </form>
+        </Card>
+      </div>
+    </SidebarInset>
   );
 }

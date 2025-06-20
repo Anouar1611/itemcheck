@@ -1,3 +1,4 @@
+
 // @ts-nocheck
 // TODO: Fix types
 "use client";
@@ -10,25 +11,24 @@ import * as z from 'zod';
 import { ListingUploadForm } from './listing-upload-form';
 import { ResultsDashboard } from './results-dashboard';
 import { handleAnalyzeListing } from '@/app/actions';
-import type { AnalyzeListingOutput } from '@/ai/flows/analyze-listing'; // Will be updated by AI flow change
+import type { AnalyzeListingOutput } from '@/ai/flows/analyze-listing';
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { Card } from '@/components/ui/card'; // Import Card for structure
 
-// Updated form schema
 const formSchema = z.object({
-  listingImage: z.any().optional(), // For File object from upload
+  listingImage: z.any().optional(),
   listingUrl: z.string().url({ message: "Please enter a valid listing URL." }).optional().or(z.literal("")),
   description: z.string().min(20, "Description must be at least 20 characters long."),
 }).refine(data => {
   const hasImageFile = !!data.listingImage;
   const hasListingUrl = !!data.listingUrl && data.listingUrl.trim() !== '';
-  return (hasImageFile || hasListingUrl); // Must have either an image upload or a listing URL
+  return (hasImageFile || hasListingUrl);
 }, {
   message: "Either an image upload or a listing URL is required, along with the description.",
-  path: ["listingImage"], // Attach root error to listingImage for display simplicity
+  path: ["listingImage"],
 });
-
 
 type FormData = z.infer<typeof formSchema>;
 
@@ -36,7 +36,7 @@ export default function ItemCheckPageClient() {
   const [analysisResult, setAnalysisResult] = useState<AnalyzeListingOutput | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null); // For uploaded image preview
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const { toast } = useToast();
 
@@ -45,33 +45,29 @@ export default function ItemCheckPageClient() {
     defaultValues: {
       description: "",
       listingImage: null,
-      listingUrl: "", // Changed from imageUrl
+      listingUrl: "",
     },
   });
 
-  const watchedListingUrl = watch("listingUrl"); // Changed from imageUrl
-  const watchedListingImage = watch("listingImage"); // This is the File object from RHF
+  const watchedListingUrl = watch("listingUrl");
+  const watchedListingImage = watch("listingImage");
 
   useEffect(() => {
-    // When imageFile (File object from manual input) changes
     if (imageFile) {
-      setValue('listingImage', imageFile, { shouldValidate: true }); // Set RHF value
-      setValue('listingUrl', '', { shouldValidate: true }); // Clear listingUrl if file is added
+      setValue('listingImage', imageFile, { shouldValidate: true });
+      setValue('listingUrl', '', { shouldValidate: true });
       const newPreview = URL.createObjectURL(imageFile);
-      setImagePreview(newPreview); // Create preview for uploaded file
-      // No need to clear listingUrl input visually here, RHF takes care of it via setValue
+      setImagePreview(newPreview);
+      const urlInput = document.getElementById('listingUrl') as HTMLInputElement;
+      if (urlInput) urlInput.value = '';
     } else {
-      // If imageFile is cleared (e.g., by user or by setting listingUrl)
       setValue('listingImage', null, { shouldValidate: true });
-      // Only clear preview if no listingUrl is ALSO set to take over preview
-      if (!watchedListingUrl) { // If listing URL is also empty, clear preview
+      if (!watchedListingUrl) {
          setImagePreview(null);
       }
     }
-    trigger('listingImage');
-    trigger('listingUrl');
+    trigger(['listingImage', 'listingUrl']);
 
-    // Cleanup object URL
     let currentPreview = imagePreview;
     return () => {
         if (currentPreview && currentPreview.startsWith('blob:')) {
@@ -83,19 +79,14 @@ export default function ItemCheckPageClient() {
 
 
   useEffect(() => {
-    // When watchedListingUrl (URL input string) changes
     if (watchedListingUrl) {
-      setImageFile(null); // Clear any uploaded file state
-      setValue('listingImage', null, {shouldValidate: true}); // Clear RHF value for file upload
-      setImagePreview(null); // Listing URL does not generate a preview in this component
-      
-      // Clear file input visually if it had a value
+      setImageFile(null); 
+      setValue('listingImage', null, {shouldValidate: true});
+      setImagePreview(null);
       const fileInput = document.getElementById('listingImage-file') as HTMLInputElement;
-      if (fileInput && fileInput.value) fileInput.value = '';
+      if (fileInput) fileInput.value = '';
     }
-    // No else needed: if listingUrl is cleared, imageFile useEffect will handle preview if imageFile exists
-    trigger('listingImage');
-    trigger('listingUrl');
+    trigger(['listingImage', 'listingUrl']);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watchedListingUrl, setValue, trigger]);
 
@@ -105,8 +96,7 @@ export default function ItemCheckPageClient() {
     setError(null);
     setAnalysisResult(null);
 
-    // Check refinement at submit time too for clarity, though Zod should catch it
-    const hasImageFile = !!imageFile; // imageFile is our source of truth for upload
+    const hasImageFile = !!imageFile;
     const hasListingUrl = !!data.listingUrl && data.listingUrl.trim() !== '';
 
     if (!data.description) {
@@ -120,10 +110,9 @@ export default function ItemCheckPageClient() {
         return;
     }
 
-
     let imagePayloadForApi: string | undefined = undefined;
 
-    if (imageFile) { // Prioritize uploaded file for the 'image' parameter to AI
+    if (imageFile) {
       try {
         imagePayloadForApi = await new Promise((resolve, reject) => {
           const reader = new FileReader();
@@ -141,8 +130,8 @@ export default function ItemCheckPageClient() {
 
     try {
       const result = await handleAnalyzeListing({
-        image: imagePayloadForApi, // This will be undefined if no file was uploaded
-        listingUrl: data.listingUrl || undefined, // Pass listingUrl if provided
+        image: imagePayloadForApi,
+        listingUrl: data.listingUrl || undefined,
         description: data.description,
       });
       setAnalysisResult(result);
@@ -164,74 +153,76 @@ export default function ItemCheckPageClient() {
   };
 
   const handleReset = () => {
-    reset(); // Resets RHF fields
-    setImageFile(null); // Clears image file state, triggers useEffect to clear preview
+    reset();
+    setImageFile(null);
     setAnalysisResult(null);
     setError(null);
     setIsLoading(false);
     const fileInput = document.getElementById('listingImage-file') as HTMLInputElement;
-    if (fileInput) fileInput.value = ''; // Ensure visual file input is cleared
+    if (fileInput) fileInput.value = '';
+    const urlInput = document.getElementById('listingUrl') as HTMLInputElement;
+    if (urlInput) urlInput.value = '';
   };
 
   return (
     <div className="min-h-full flex flex-col">
-      <div className="flex-grow container mx-auto px-4 md:px-6 py-8 md:py-12">
-        <ListingUploadForm
-          onSubmit={handleSubmit(onSubmit)}
-          control={control}
-          errors={errors}
-          isLoading={isLoading}
-          imagePreview={imagePreview}
-          setImagePreview={setImagePreview} 
-          setImageFile={setImageFile}
-          currentListingUrl={watchedListingUrl} 
-          uploadedFile={imageFile} 
-        />
+      <ListingUploadForm
+        onSubmit={handleSubmit(onSubmit)}
+        control={control}
+        errors={errors}
+        isLoading={isLoading}
+        imagePreview={imagePreview}
+        setImageFile={setImageFile}
+        currentListingUrl={watchedListingUrl} 
+        uploadedFile={imageFile} 
+      />
 
-        {isLoading && (
-          <div className="mt-12 space-y-8">
+      {isLoading && (
+        <div className="mt-8 md:mt-12 space-y-6 md:space-y-8">
+          <CardSkeleton />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             <CardSkeleton />
-            <div className="grid md:grid-cols-2 gap-8">
-              <CardSkeleton />
-              <CardSkeleton />
-            </div>
+            <CardSkeleton />
           </div>
-        )}
-        
-        {/* Display root error from Zod refine if it exists and is for listingImage */}
-        {errors.listingImage && errors.listingImage.type !== 'required' && (
-            <div className="mt-4 text-center p-3 bg-destructive/10 text-destructive border border-destructive rounded-md">
-                <p className="text-sm font-medium">{errors.listingImage.message?.toString()}</p>
-            </div>
-        )}
-
-        {error && (
-          <div className="mt-8 text-center p-4 bg-destructive/10 text-destructive border border-destructive rounded-md">
-            <p className="font-medium">Error: {error}</p>
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+            <CardSkeleton />
+            <CardSkeleton />
           </div>
-        )}
+        </div>
+      )}
+      
+      {errors.listingImage && errors.listingImage.type === 'manual' && (
+          <Card className="mt-6 bg-destructive/10 border-destructive text-destructive p-4">
+              <p className="text-sm font-medium text-center">{errors.listingImage.message?.toString()}</p>
+          </Card>
+      )}
 
-        {analysisResult && !isLoading && (
-          <>
-            <ResultsDashboard analysisResult={analysisResult} />
-            <div className="mt-12 text-center">
-              <Button onClick={handleReset} variant="outline" size="lg">
-                Analyze Another Item
-              </Button>
-            </div>
-          </>
-        )}
-      </div>
+      {error && (
+        <Card className="mt-8 bg-destructive/10 border-destructive text-destructive p-4">
+          <p className="font-medium text-center">Error: {error}</p>
+        </Card>
+      )}
+
+      {analysisResult && !isLoading && (
+        <>
+          <ResultsDashboard analysisResult={analysisResult} />
+          <div className="mt-8 md:mt-12 text-center">
+            <Button onClick={handleReset} variant="outline" size="lg" className="border-border hover:bg-muted">
+              Analyze Another Item
+            </Button>
+          </div>
+        </>
+      )}
     </div>
   );
 }
 
 const CardSkeleton = () => (
-  <div className="p-6 border rounded-lg shadow-sm bg-card">
-    <Skeleton className="h-8 w-1/2 mb-4" />
-    <Skeleton className="h-4 w-3/4 mb-2" />
-    <Skeleton className="h-4 w-full mb-2" />
-    <Skeleton className="h-4 w-5/6 mb-6" />
-    <Skeleton className="h-10 w-full" />
-  </div>
+  <Card className="p-6 bg-card border-border shadow-sm">
+    <Skeleton className="h-8 w-1/2 mb-4 bg-muted/50" />
+    <Skeleton className="h-4 w-3/4 mb-2 bg-muted/50" />
+    <Skeleton className="h-4 w-full mb-2 bg-muted/50" />
+    <Skeleton className="h-4 w-5/6 mb-6 bg-muted/50" />
+    <Skeleton className="h-10 w-full bg-muted/50" />
+  </Card>
 );
