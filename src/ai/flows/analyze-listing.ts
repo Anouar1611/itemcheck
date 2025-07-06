@@ -12,6 +12,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { ebaySearchTool } from '@/ai/tools/ebay-search-tool';
 
 const AnalyzeListingInputSchema = z.object({
   listingUrl: z.string().url().optional()
@@ -64,28 +65,46 @@ const analyzeListingPrompt = ai.definePrompt({
   name: 'analyzeListingPrompt',
   input: {schema: AnalyzeListingInputSchema},
   output: {schema: AnalyzeListingOutputSchema},
-  prompt: `You are an AI assistant that analyzes marketplace listings to assess their quality, price fairness, and seller reliability.
+  tools: [ebaySearchTool],
+  prompt: `You are an expert marketplace analyst AI, designed to help users make informed purchasing decisions. Your goal is to provide a comprehensive, structured analysis of an online listing based on the provided information.
 
-  {{#if listingUrl}}
-  The listing is reportedly from the following URL (NOTE: You CANNOT access this URL directly. Use it for context only if no direct image is provided): {{{listingUrl}}}
-  {{/if}}
+**IMPORTANT**: For the price fairness analysis, you MUST use the \`ebaySearchTool\` to find comparable items. Use the full \`description\` of the item as the search term for the tool.
 
-  Analyze the following listing details:
-  Description: {{{description}}}
-  {{#if image}}
-  Image: {{media url=image}}
-  {{else}}
-  No direct image was uploaded for this analysis. Base visual assessment on the description and any context from the listing URL (if provided).
-  {{/if}}
+Here is the listing information you need to analyze:
+{{#if listingUrl}}
+- **Listing URL**: {{{listingUrl}}} (Note: You cannot access this URL. Use it for context only.)
+{{/if}}
+- **Listing Description**: {{{description}}}
+{{#if image}}
+- **Listing Image**: {{media url=image}}
+{{else}}
+- **Listing Image**: None provided. Base your visual assessment on the description.
+{{/if}}
 
-  Provide a detailed analysis of the listing, including:
-  - A listing quality score (0-100) and assessment, with suggestions for improvement.
-  - A price fairness check, indicating whether the price is fair and providing a fair market value estimate.
-  - An evaluation of the seller's reliability, including a reliability score (0-100) and reasoning.
-  - Extracted information from the listing image (if an image was provided) and description.
+Please perform the following analysis and provide the output in the required JSON format:
 
-  Ensure that the output is well-structured and easy to understand.
-  Follow the schema description for output formatting.`,
+**1. Extracted Information (\`extractedInformation\`)**
+- Summarize the key details you can identify from the image and description. This includes the item's name, brand, model, condition (e.g., new, used, damaged), and any included accessories. Be concise and factual.
+
+**2. Listing Quality (\`listingQuality\`)**
+- **Quality Score (\`qualityScore\`):** Provide a score from 0 to 100.
+  - Base this on the clarity and quality of the image (if provided), and the detail, grammar, and completeness of the description. High-quality images and detailed, well-written descriptions get higher scores.
+- **Quality Assessment (\`qualityAssessment\`):** Write a brief assessment explaining the score. Mention specific strengths (e.g., "clear, well-lit photos") and weaknesses (e.g., "vague description, missing key details").
+- **Suggestions (\`suggestions\`):** Provide actionable suggestions for how the seller could improve the listing to attract more buyers and justify its price.
+
+**3. Price Fairness (\`priceFairness\`)**
+- **Analysis**: Use the \`ebaySearchTool\` with the item's description to get a summary of comparable listings and their prices.
+- **Fair Market Value (\`fairMarketValue\`):** Based on the tool's output and the item's described condition, estimate a fair market value range (e.g., "$100 - $120").
+- **Is Fair Price (\`isFairPrice\`):** Based on your estimated fair market value, determine if the item's price (which you will need to infer from the description if not explicitly stated) is fair.
+- **Price Reasoning (\`priceReasoning\`):** Explain your reasoning. Reference the comparable items found by the tool. For example: "The asking price is slightly high compared to similar vintage cameras found on eBay, which range from $50 to $120." If the tool returns no relevant items, state that you could not determine price fairness due to a lack of comparable data.
+
+**4. Seller Reliability (\`sellerReliability\`)**
+- **Reliability Score (\`reliabilityScore\`):** Provide a score from 0 to 100.
+  - Base this on signals within the description. High scores come from detailed information, clear return policies (if mentioned), and a professional tone. Low scores may result from pressure tactics ("buy now!"), vague details, or a lack of information.
+- **Is Reliable Seller (\`isReliableSeller\`):** Based on the score, determine if the seller appears reliable.
+- **Reliability Reasoning (\`reliabilityReasoning\`):** Explain your reasoning based on the content of the description. For example: "The seller provides a detailed history of the item and mentions a return policy, which are positive signals." or "The description is sparse and uses urgent language, which advises caution."
+
+Adhere strictly to the output JSON schema.`,
 });
 
 const analyzeListingFlow = ai.defineFlow(
@@ -93,6 +112,7 @@ const analyzeListingFlow = ai.defineFlow(
     name: 'analyzeListingFlow',
     inputSchema: AnalyzeListingInputSchema,
     outputSchema: AnalyzeListingOutputSchema,
+    tools: [ebaySearchTool],
   },
   async input => {
     const {output} = await analyzeListingPrompt(input);

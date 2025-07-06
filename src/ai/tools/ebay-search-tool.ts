@@ -1,5 +1,4 @@
 
-'use server';
 /**
  * @fileOverview A Genkit tool to search for similar items on eBay.
  * This is a placeholder and currently returns mock data.
