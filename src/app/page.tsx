@@ -1,12 +1,10 @@
-import ItemCheckPageClient from '@/components/itemcheck/item-check-page-client';
+import { ClarityPage } from '@/components/clarity/clarity-page';
 import { SidebarInset } from '@/components/ui/sidebar';
 
 export default function Home() {
   return (
     <SidebarInset>
-      <div className="p-4 md:p-6 lg:p-8 w-full">
-        <ItemCheckPageClient />
-      </div>
+      <ClarityPage />
     </SidebarInset>
   );
 }

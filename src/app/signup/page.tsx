@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -25,7 +24,7 @@ export default function SignupPage() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        router.push("/"); // Redirect if already logged in
+        router.push("/");
       }
     });
     return () => unsubscribe();
@@ -63,11 +62,11 @@ export default function SignupPage() {
 
   return (
     <SidebarInset>
-      <div className="flex items-center justify-center min-h-full py-12 px-4">
+      <div className="flex items-center justify-center min-h-full py-12 px-4 bg-gray-50 dark:bg-transparent">
         <Card className="w-full max-w-md shadow-xl bg-card border-border">
           <CardHeader className="text-center">
             <CardTitle className="text-3xl font-bold text-card-foreground">Create an Account</CardTitle>
-            <CardDescription className="text-muted-foreground">Join ItemCheck AI to start analyzing listings today.</CardDescription>
+            <CardDescription className="text-muted-foreground">Join Clarity AI to start analyzing content today.</CardDescription>
           </CardHeader>
           <form onSubmit={handleSignup}>
             <CardContent className="space-y-6">

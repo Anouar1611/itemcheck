@@ -11,7 +11,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { ScanSearch, Tag, LogIn, UserPlus, Home, Settings, LogOut, PanelLeft } from 'lucide-react';
+import { ScanText, Image, LogIn, UserPlus, Home, Settings, LogOut, PanelLeft } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { auth } from '@/lib/firebase';
 import { useEffect, useState } from 'react';
@@ -49,7 +49,6 @@ export function DashboardSidebar() {
     try {
       await signOut(auth);
       toast({ title: "Logged Out", description: "You have been successfully logged out." });
-      // router.push('/'); // Or to login page
     } catch (error: any) {
       toast({ title: "Logout Failed", description: error.message, variant: "destructive" });
     }
@@ -60,16 +59,14 @@ export function DashboardSidebar() {
     return name.split(' ').map((n) => n[0]).join('').toUpperCase();
   };
 
-
   if (!isMounted) {
-    // Avoid rendering sidebar content prematurely to prevent hydration issues
     return (
-        <Sidebar collapsible="icon" className="border-r border-sidebar-border">
+        <Sidebar collapsible="icon" className="border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
             <SidebarHeader className="p-2 flex items-center justify-between">
                  {state === 'expanded' && (
-                    <Link href="/" className="flex items-center gap-2" aria-label="ItemCheck AI Home">
-                        <ScanSearch className="h-7 w-7 text-primary" />
-                        <h1 className="text-xl font-semibold">ItemCheck AI</h1>
+                    <Link href="/" className="flex items-center gap-2" aria-label="Clarity AI Home">
+                        <ScanText className="h-7 w-7 text-primary" />
+                        <h1 className="text-xl font-semibold">Clarity AI</h1>
                     </Link>
                  )}
                 <Button variant="ghost" size="icon" onClick={toggleSidebar} className="text-sidebar-foreground hover:text-sidebar-accent-foreground">
@@ -80,14 +77,13 @@ export function DashboardSidebar() {
     );
   }
 
-
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border" variant="sidebar">
       <SidebarHeader className="p-2 flex items-center justify-between">
          {state === 'expanded' && (
-            <Link href="/" className="flex items-center gap-2" aria-label="ItemCheck AI Home">
-                <ScanSearch className="h-7 w-7 text-primary" />
-                <h1 className="text-xl font-semibold">ItemCheck AI</h1>
+            <Link href="/" className="flex items-center gap-2" aria-label="Clarity AI Home">
+                <ScanText className="h-7 w-7 text-primary" />
+                <h1 className="text-xl font-semibold text-sidebar-foreground">Clarity AI</h1>
             </Link>
          )}
         <Button variant="ghost" size="icon" onClick={toggleSidebar} className="text-sidebar-foreground hover:bg-sidebar-accent/50">
@@ -99,15 +95,8 @@ export function DashboardSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <Link href="/" legacyBehavior passHref>
-              <SidebarMenuButton asChild isActive={pathname === '/'} tooltip={state === 'collapsed' ? 'Home' : undefined}>
-                <a><NavLinkContent icon={<Home size={18}/>} label="Analyze"/></a>
-              </SidebarMenuButton>
-            </Link>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <Link href="/pricing" legacyBehavior passHref>
-              <SidebarMenuButton asChild isActive={pathname === '/pricing'} tooltip={state === 'collapsed' ? 'Pricing' : undefined}>
-                <a><NavLinkContent icon={<Tag size={18}/>} label="Pricing"/></a>
+              <SidebarMenuButton asChild isActive={pathname === '/'} tooltip={state === 'collapsed' ? 'Analyzer' : undefined}>
+                <a><NavLinkContent icon={<Home size={18}/>} label="Analyzer"/></a>
               </SidebarMenuButton>
             </Link>
           </SidebarMenuItem>
@@ -124,7 +113,7 @@ export function DashboardSidebar() {
                         <AvatarFallback>{getInitials(user.displayName)}</AvatarFallback>
                     </Avatar>
                     <div>
-                        <p className="text-sm font-medium text-foreground">{user.displayName || 'User'}</p>
+                        <p className="text-sm font-medium text-sidebar-foreground">{user.displayName || 'User'}</p>
                         <p className="text-xs text-muted-foreground">{user.email}</p>
                     </div>
                 </div>
