@@ -7,7 +7,7 @@ import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
+import { Loader2, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { handleAnalyzeText } from '@/app/actions';
 import type { AnalyzeTextForBiasOutput } from '@/ai/flows/analyze-text-flow';
@@ -59,7 +59,10 @@ export function TextAnalyzer() {
   return (
     <Card className="w-full shadow-lg border-border/60">
       <CardHeader>
-        <CardTitle>Text Analyzer</CardTitle>
+        <CardTitle className="flex items-center">
+          <FileText className="mr-2 h-6 w-6 text-primary" />
+          Text Analyzer
+        </CardTitle>
         <CardDescription>Paste text below to scan for biases and contradictions.</CardDescription>
       </CardHeader>
       <CardContent>

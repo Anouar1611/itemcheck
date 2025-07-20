@@ -11,7 +11,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { ScanText, Image, LogIn, UserPlus, Home, Settings, LogOut, PanelLeft } from 'lucide-react';
+import { ScanSearch, Image, LogIn, UserPlus, Home, Settings, LogOut, PanelLeft } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { auth } from '@/lib/firebase';
 import { useEffect, useState } from 'react';
@@ -65,7 +65,7 @@ export function DashboardSidebar() {
             <SidebarHeader className="p-2 flex items-center justify-between">
                  {state === 'expanded' && (
                     <Link href="/" className="flex items-center gap-2" aria-label="Clarity AI Home">
-                        <ScanText className="h-7 w-7 text-primary" />
+                        <ScanSearch className="h-7 w-7 text-primary" />
                         <h1 className="text-xl font-semibold">Clarity AI</h1>
                     </Link>
                  )}
@@ -82,7 +82,7 @@ export function DashboardSidebar() {
       <SidebarHeader className="p-2 flex items-center justify-between">
          {state === 'expanded' && (
             <Link href="/" className="flex items-center gap-2" aria-label="Clarity AI Home">
-                <ScanText className="h-7 w-7 text-primary" />
+                <ScanSearch className="h-7 w-7 text-primary" />
                 <h1 className="text-xl font-semibold text-sidebar-foreground">Clarity AI</h1>
             </Link>
          )}

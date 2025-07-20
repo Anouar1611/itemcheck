@@ -7,7 +7,7 @@ import * as z from 'zod';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { UploadCloud, X, Loader2 } from 'lucide-react';
+import { UploadCloud, X, Loader2, Image as ImageIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { handleAnalyzeImage } from '@/app/actions';
 import type { ExtractAndAnalyzeImageOutput } from '@/ai/flows/extract-and-analyze-image-flow';
@@ -100,7 +100,10 @@ export function ImageAnalyzer() {
   return (
     <Card className="w-full shadow-lg border-border/60">
       <CardHeader>
-        <CardTitle>Image & Text Analyzer</CardTitle>
+        <CardTitle className="flex items-center">
+          <ImageIcon className="mr-2 h-6 w-6 text-primary" />
+          Image & Text Analyzer
+        </CardTitle>
         <CardDescription>Upload a screenshot or image with text to analyze its content.</CardDescription>
       </CardHeader>
       <CardContent>
