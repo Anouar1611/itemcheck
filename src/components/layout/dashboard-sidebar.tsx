@@ -1,4 +1,3 @@
-
 'use client';
 import Link from 'next/link';
 import {
@@ -91,7 +90,7 @@ export function DashboardSidebar() {
                 <h1 className="text-xl font-semibold">ItemCheck AI</h1>
             </Link>
          )}
-        <Button variant="ghost" size="icon" onClick={toggleSidebar} className="text-sidebar-foreground hover:text-sidebar-accent-foreground">
+        <Button variant="ghost" size="icon" onClick={toggleSidebar} className="text-sidebar-foreground hover:bg-sidebar-accent/50">
             <PanelLeft size={20} />
         </Button>
       </SidebarHeader>

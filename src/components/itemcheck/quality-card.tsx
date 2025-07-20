@@ -1,4 +1,3 @@
-
 // @ts-nocheck
 // TODO: Fix types
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -29,13 +28,13 @@ export function QualityCard({ qualityData }: QualityCardProps) {
 
 
   return (
-    <Card className="shadow-lg bg-card border-border">
+    <Card className="shadow-lg bg-card border-border/50">
       <CardHeader>
         <div className="flex items-center space-x-3">
           <Award className="h-8 w-8 text-primary" />
-          <CardTitle className="text-2xl text-card-foreground">Listing Quality</CardTitle>
+          <CardTitle className="text-2xl text-foreground">Listing Quality</CardTitle>
         </div>
-        <CardDescription className="text-muted-foreground">Assessment of the listing's overall quality and presentation.</CardDescription>
+        <CardDescription className="text-muted-foreground">Assessment of the listing's presentation.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="h-[100px] w-full">
@@ -63,15 +62,15 @@ export function QualityCard({ qualityData }: QualityCardProps) {
         
         {qualityData.qualityAssessment && (
           <div>
-            <h4 className="font-semibold text-md mb-1 flex items-center text-card-foreground"><Zap className="w-5 h-5 mr-2 text-accent"/>Assessment</h4>
-            <p className="text-sm text-muted-foreground bg-input p-3 rounded-md">{qualityData.qualityAssessment}</p>
+            <h4 className="font-semibold text-md mb-1 flex items-center text-foreground"><Zap className="w-5 h-5 mr-2 text-accent"/>Assessment</h4>
+            <p className="text-sm text-muted-foreground bg-input p-3 rounded-md border border-border/50">{qualityData.qualityAssessment}</p>
           </div>
         )}
 
         {qualityData.suggestions && (
           <div>
-            <h4 className="font-semibold text-md mb-1 flex items-center text-card-foreground"><Lightbulb className="w-5 h-5 mr-2 text-primary"/>Suggestions for Improvement</h4>
-            <p className="text-sm text-muted-foreground bg-input p-3 rounded-md">{qualityData.suggestions}</p>
+            <h4 className="font-semibold text-md mb-1 flex items-center text-foreground"><Lightbulb className="w-5 h-5 mr-2 text-primary"/>Suggestions for Improvement</h4>
+            <p className="text-sm text-muted-foreground bg-input p-3 rounded-md border border-border/50">{qualityData.suggestions}</p>
           </div>
         )}
       </CardContent>

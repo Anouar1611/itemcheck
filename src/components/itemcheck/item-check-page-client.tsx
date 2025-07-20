@@ -1,4 +1,3 @@
-
 // @ts-nocheck
 // TODO: Fix types
 "use client";
@@ -165,7 +164,7 @@ export default function ItemCheckPageClient() {
   };
 
   return (
-    <div className="min-h-full flex flex-col">
+    <div className="min-h-full flex flex-col items-center">
       <ListingUploadForm
         onSubmit={handleSubmit(onSubmit)}
         control={control}
@@ -178,13 +177,13 @@ export default function ItemCheckPageClient() {
       />
 
       {isLoading && (
-        <div className="mt-8 md:mt-12 space-y-6 md:space-y-8">
-          <CardSkeleton />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div className="mt-8 md:mt-12 space-y-6 md:space-y-8 w-full max-w-7xl">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+            <CardSkeleton />
             <CardSkeleton />
             <CardSkeleton />
           </div>
-           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             <CardSkeleton />
             <CardSkeleton />
           </div>
@@ -192,22 +191,24 @@ export default function ItemCheckPageClient() {
       )}
       
       {errors.listingImage && errors.listingImage.type === 'manual' && (
-          <Card className="mt-6 bg-destructive/10 border-destructive text-destructive p-4">
+          <Card className="mt-6 bg-destructive/10 border-destructive text-destructive p-4 w-full max-w-3xl">
               <p className="text-sm font-medium text-center">{errors.listingImage.message?.toString()}</p>
           </Card>
       )}
 
       {error && (
-        <Card className="mt-8 bg-destructive/10 border-destructive text-destructive p-4">
+        <Card className="mt-8 bg-destructive/10 border-destructive text-destructive p-4 w-full max-w-3xl">
           <p className="font-medium text-center">Error: {error}</p>
         </Card>
       )}
 
       {analysisResult && !isLoading && (
         <>
-          <ResultsDashboard analysisResult={analysisResult} />
+          <div className="w-full max-w-7xl">
+            <ResultsDashboard analysisResult={analysisResult} />
+          </div>
           <div className="mt-8 md:mt-12 text-center">
-            <Button onClick={handleReset} variant="outline" size="lg" className="border-border hover:bg-muted">
+            <Button onClick={handleReset} variant="outline" size="lg" className="border-border hover:bg-muted text-lg py-6">
               Analyze Another Item
             </Button>
           </div>
@@ -218,11 +219,12 @@ export default function ItemCheckPageClient() {
 }
 
 const CardSkeleton = () => (
-  <Card className="p-6 bg-card border-border shadow-sm">
-    <Skeleton className="h-8 w-1/2 mb-4 bg-muted/50" />
-    <Skeleton className="h-4 w-3/4 mb-2 bg-muted/50" />
-    <Skeleton className="h-4 w-full mb-2 bg-muted/50" />
-    <Skeleton className="h-4 w-5/6 mb-6 bg-muted/50" />
-    <Skeleton className="h-10 w-full bg-muted/50" />
+  <Card className="p-6 bg-card border-border/50 shadow-sm w-full">
+    <Skeleton className="h-8 w-1/2 mb-4 bg-muted" />
+    <Skeleton className="h-4 w-3/4 mb-6 bg-muted" />
+    <div className="space-y-2">
+      <Skeleton className="h-4 w-full bg-muted" />
+      <Skeleton className="h-4 w-5/6 bg-muted" />
+    </div>
   </Card>
 );

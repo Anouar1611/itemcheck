@@ -1,4 +1,3 @@
-
 // @ts-nocheck
 // TODO: Fix types
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -31,13 +30,13 @@ export function ReliabilityCard({ reliabilityData }: ReliabilityCardProps) {
 
 
   return (
-    <Card className="shadow-lg bg-card border-border">
+    <Card className="shadow-lg bg-card border-border/50">
       <CardHeader>
         <div className="flex items-center space-x-3">
           <ShieldCheck className="h-8 w-8 text-primary" />
-          <CardTitle className="text-2xl text-card-foreground">Seller Reliability</CardTitle>
+          <CardTitle className="text-2xl text-foreground">Seller Reliability</CardTitle>
         </div>
-         <CardDescription className="text-muted-foreground">Assessment of the seller's trustworthiness based on available signals.</CardDescription>
+         <CardDescription className="text-muted-foreground">Trustworthiness based on available signals.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
          <div className="h-[100px] w-full">
@@ -65,15 +64,15 @@ export function ReliabilityCard({ reliabilityData }: ReliabilityCardProps) {
 
         <div className="flex items-center space-x-2 justify-center">
           <p className="text-sm font-medium text-muted-foreground">Seller Assessment:</p>
-          <Badge variant={reliabilityData.isReliableSeller ? "default" : "destructive"} className={reliabilityData.isReliableSeller ? "bg-primary text-primary-foreground" : "bg-destructive text-destructive-foreground"}>
+          <Badge variant={reliabilityData.isReliableSeller ? "default" : "destructive"} className={reliabilityData.isReliableSeller ? "bg-primary/20 text-primary border border-primary/30" : "bg-destructive/20 text-destructive border border-destructive/30"}>
             {reliabilityData.isReliableSeller ? "Appears Reliable" : "Caution Advised"}
           </Badge>
         </div>
         
         {reliabilityData.reliabilityReasoning && (
           <div>
-            <h4 className="font-semibold text-md mb-1 flex items-center text-card-foreground"><MessageCircleMore className="w-5 h-5 mr-2 text-accent"/>Reasoning</h4>
-            <p className="text-sm text-muted-foreground bg-input p-3 rounded-md">{reliabilityData.reliabilityReasoning}</p>
+            <h4 className="font-semibold text-md mb-1 flex items-center text-foreground"><MessageCircleMore className="w-5 h-5 mr-2 text-accent"/>Reasoning</h4>
+            <p className="text-sm text-muted-foreground bg-input p-3 rounded-md border border-border/50">{reliabilityData.reliabilityReasoning}</p>
           </div>
         )}
       </CardContent>

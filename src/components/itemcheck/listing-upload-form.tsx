@@ -1,4 +1,3 @@
-
 // @ts-nocheck
 // TODO: Fix types
 "use client";
@@ -55,17 +54,22 @@ export function ListingUploadForm({
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto shadow-xl bg-card border-border">
+    <Card className="w-full max-w-3xl mx-auto shadow-2xl bg-card border-border/50">
       <CardHeader className="text-center">
-        <CardTitle className="text-3xl font-bold text-card-foreground">Analyze Marketplace Listing</CardTitle>
-        <CardDescription className="text-muted-foreground">Get AI-powered insights into quality, price, and seller reliability.</CardDescription>
+        <div className="flex justify-center items-center gap-3 mb-2">
+            <ScanSearch className="h-8 w-8 text-primary" />
+            <CardTitle className="text-3xl font-bold text-foreground">Analyze Marketplace Listing</CardTitle>
+        </div>
+        <CardDescription className="text-muted-foreground text-lg">
+          Get AI-powered insights into quality, price, and seller reliability.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={onSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             <div className="space-y-2">
-              <Label htmlFor="listingImage-file" className="text-base font-medium text-card-foreground flex items-center">
-                <ImagePlus className="w-5 h-5 mr-2" /> Upload Image
+              <Label htmlFor="listingImage-file" className="text-base font-medium text-foreground flex items-center">
+                <ImagePlus className="w-5 h-5 mr-2 text-primary" /> Upload Image
               </Label>
               <Controller
                 name="listingImage" 
@@ -77,7 +81,7 @@ export function ListingUploadForm({
                       type="file"
                       accept="image/png, image/jpeg, image/webp"
                       onChange={handleImageChange}
-                      className={`file:text-sm file:font-medium file:text-primary file:bg-transparent hover:file:text-primary/80 border-input focus:ring-ring ${fieldState.error ? 'border-destructive' : 'border-border'}`}
+                      className={`file:text-sm file:font-medium file:text-primary file:bg-transparent hover:file:text-primary/80 ${fieldState.error ? 'border-destructive' : ''}`}
                       disabled={isLoading || !!currentListingUrl}
                     />
                     {fieldState.error && !errors.listingImage?.type?.startsWith('manual') && <p className="text-sm text-destructive mt-1">{fieldState.error.message}</p>}
@@ -85,8 +89,8 @@ export function ListingUploadForm({
                 )}
               />
               {imagePreview && uploadedFile && (
-                <div className="mt-3 relative group w-full aspect-video border border-border rounded-md overflow-hidden shadow-sm bg-muted/20">
-                  <Image src={imagePreview} alt="Listing preview" layout="fill" objectFit="contain" data-ai-hint="product item" />
+                <div className="mt-3 relative group w-full aspect-video border-2 border-dashed border-border hover:border-primary transition-colors rounded-lg overflow-hidden shadow-inner bg-muted/20 flex items-center justify-center">
+                  <Image src={imagePreview} alt="Listing preview" layout="fill" objectFit="contain" className="p-1" data-ai-hint="product item" />
                   <Button
                     type="button"
                     variant="destructive"
@@ -103,9 +107,16 @@ export function ListingUploadForm({
             </div>
 
             <div className="space-y-2">
-              <div className="text-center text-sm text-muted-foreground md:hidden my-2">OR</div>
-               <Label htmlFor="listingUrl" className="text-base font-medium text-card-foreground flex items-center">
-                <LinkIcon className="w-5 h-5 mr-2" /> Listing URL
+              <div className="relative md:hidden my-2">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-border" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-card px-2 text-muted-foreground">OR</span>
+                </div>
+              </div>
+               <Label htmlFor="listingUrl" className="text-base font-medium text-foreground flex items-center">
+                <LinkIcon className="w-5 h-5 mr-2 text-primary" /> Listing URL
               </Label>
               <Controller
                 name="listingUrl"
@@ -115,7 +126,7 @@ export function ListingUploadForm({
                     id="listingUrl"
                     type="url"
                     placeholder="https://marketplace.com/item-123"
-                    className={`${fieldState.error ? 'border-destructive' : 'border-border focus:ring-ring'} border-input`}
+                    className={`${fieldState.error ? 'border-destructive' : ''}`}
                     {...field}
                     disabled={isLoading || !!uploadedFile}
                   />
@@ -125,13 +136,8 @@ export function ListingUploadForm({
             </div>
           </div>
           
-          <div className="text-center text-sm text-muted-foreground my-0 hidden md:block">
-             Provide an image OR a URL
-          </div>
-
-
           <div className="space-y-2">
-            <Label htmlFor="description" className="text-base font-medium text-card-foreground">Listing Description</Label>
+            <Label htmlFor="description" className="text-base font-medium text-foreground">Listing Description</Label>
             <Controller
               name="description"
               control={control}
@@ -139,7 +145,7 @@ export function ListingUploadForm({
                 <Textarea
                   id="description"
                   placeholder="Enter the full listing description here..."
-                  className={`min-h-[120px] text-base resize-y ${errors.description ? 'border-destructive' : 'border-border focus:ring-ring'} border-input`}
+                  className={`min-h-[140px] text-base resize-y ${errors.description ? 'border-destructive' : ''}`}
                   {...field}
                   disabled={isLoading}
                 />
@@ -152,7 +158,7 @@ export function ListingUploadForm({
              <p className="text-sm text-destructive text-center -mt-2">{errors.listingImage.message?.toString()}</p>
           )}
 
-          <Button type="submit" className="w-full text-lg py-3 bg-primary hover:bg-primary/90 text-primary-foreground" disabled={isLoading}>
+          <Button type="submit" size="lg" className="w-full text-lg py-7 font-semibold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20" disabled={isLoading}>
             {isLoading ? (
               <div className="flex items-center justify-center">
                 <svg className="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -163,7 +169,7 @@ export function ListingUploadForm({
               </div>
             ) : (
               <div className="flex items-center justify-center">
-                <ScanSearch className="mr-2 h-5 w-5" />
+                <ScanSearch className="mr-2 h-6 w-6" />
                 Analyze Listing
               </div>
             )}
