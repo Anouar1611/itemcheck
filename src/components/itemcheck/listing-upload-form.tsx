@@ -14,7 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { handleAnalyzeListing, handleAnalyzeImageForDamage } from '@/app/actions';
 import type { AnalyzeListingOutput } from '@/ai/flows/analyze-listing-flow';
 import type { AnalyzeImageForDamageOutput } from '@/ai/flows/analyze-image-damage-flow';
-import { Loader2, UploadCloud, FileText, Image as ImageIcon, X } from 'lucide-react';
+import { Loader2, UploadCloud, FileText, Image as ImageIcon, X, Tag } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const formSchemaText = z.object({
@@ -136,10 +136,13 @@ export function ListingUploadForm({
   return (
     <Card className="w-full shadow-lg border-border/60 bg-card overflow-hidden">
       <CardHeader className="text-center p-6 bg-card/50">
-        <CardTitle className="text-3xl font-bold">
-          Marketplace Listing Analyzer
-        </CardTitle>
-        <CardDescription className="text-lg text-muted-foreground mt-1">
+        <div className="flex justify-center items-center gap-3">
+          <Tag className="h-10 w-10 text-primary" />
+          <CardTitle className="text-3xl font-bold">
+            ItemCheck AI
+          </CardTitle>
+        </div>
+        <CardDescription className="text-lg text-muted-foreground mt-2">
           Buy smarter. Get an instant AI-powered analysis of any listing.
         </CardDescription>
       </CardHeader>

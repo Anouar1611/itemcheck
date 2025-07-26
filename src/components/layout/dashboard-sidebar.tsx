@@ -11,7 +11,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, LogIn, UserPlus, Home, LogOut, PanelLeft, Tag } from 'lucide-react';
+import { LogIn, UserPlus, Home, LogOut, PanelLeft, Tag } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { auth } from '@/lib/firebase';
 import { useEffect, useState } from 'react';
@@ -65,7 +65,7 @@ export function DashboardSidebar() {
             <SidebarHeader className="p-2 flex items-center justify-between">
                  {state === 'expanded' && (
                     <Link href="/" className="flex items-center gap-2" aria-label="ItemCheck AI Home">
-                        <ShoppingCart className="h-7 w-7 text-primary" />
+                        <Tag className="h-7 w-7 text-primary" />
                         <h1 className="text-xl font-semibold">ItemCheck AI</h1>
                     </Link>
                  )}
@@ -82,7 +82,7 @@ export function DashboardSidebar() {
       <SidebarHeader className="p-2 flex items-center justify-between">
          {state === 'expanded' && (
             <Link href="/" className="flex items-center gap-2" aria-label="ItemCheck AI Home">
-                <ShoppingCart className="h-7 w-7 text-primary" />
+                <Tag className="h-7 w-7 text-primary" />
                 <h1 className="text-xl font-semibold text-sidebar-foreground">ItemCheck AI</h1>
             </Link>
          )}
