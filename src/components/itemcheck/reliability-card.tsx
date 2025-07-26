@@ -14,7 +14,7 @@ export function ReliabilityCard({ sellerReliability }: ReliabilityCardProps) {
   const { score, reason } = sellerReliability;
 
   const chartData = [{ name: 'Reliability', score: score }];
-  const chartColor = score >= 8 ? '#22c55e' : score >= 5 ? '#f59e0b' : '#ef4444';
+  const chartColor = score >= 8 ? 'hsl(var(--primary))' : score >= 5 ? '#f59e0b' : '#ef4444';
 
   return (
     <Card className="shadow-md">

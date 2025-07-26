@@ -6,11 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { cn } from '@/lib/utils';
 import type { AnalyzeListingOutput } from '@/ai/flows/analyze-listing-flow';
 
-// Define a custom Progress component that can accept an indicatorClassName
 const CustomProgress = React.forwardRef<
   React.ElementRef<typeof ProgressPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root> & { indicatorClassName?: string }
->(({ className, value, indicatorClassName, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root>
+>(({ className, value, ...props }, ref) => (
   <ProgressPrimitive.Root
     ref={ref}
     className={cn(
@@ -20,7 +19,7 @@ const CustomProgress = React.forwardRef<
     {...props}
   >
     <ProgressPrimitive.Indicator
-      className={cn("h-full w-full flex-1 bg-primary transition-all", indicatorClassName)}
+      className="h-full w-full flex-1 bg-primary transition-all"
       style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
     />
   </ProgressPrimitive.Root>
@@ -36,17 +35,18 @@ export function OverallScoreCard({ overallScore }: OverallScoreCardProps) {
   const { score, reason } = overallScore;
   const percentage = score * 10;
 
-  const getScoreColorClass = (value: number) => {
-    if (value >= 80) return 'bg-green-500'; // Using a distinct color for high scores
-    if (value >= 50) return 'bg-yellow-500'; // Using a distinct color for medium scores
-    return 'bg-destructive'; // Use theme's destructive color for low scores
+  const getScoreRingColorClass = (value: number) => {
+    if (value >= 80) return 'bg-primary/20 text-primary';
+    if (value >= 50) return 'bg-yellow-500/20 text-yellow-400';
+    return 'bg-destructive/20 text-destructive';
   };
   
-  const getScoreRingColorClass = (value: number) => {
-    if (value >= 80) return 'bg-green-500/20 text-green-300';
-    if (value >= 50) return 'bg-yellow-500/20 text-yellow-300';
-    return 'bg-destructive/20 text-destructive-foreground';
-  };
+  const getScoreBgColorClass = (value: number) => {
+    if (value >= 80) return 'bg-primary';
+    if (value >= 50) return 'bg-yellow-500';
+    return 'bg-destructive';
+  }
+
 
   return (
     <Card className="shadow-lg bg-card/80 border-border/60">
@@ -62,12 +62,12 @@ export function OverallScoreCard({ overallScore }: OverallScoreCardProps) {
               getScoreRingColorClass(percentage)
             )}
           >
-            <div className={cn("flex h-20 w-20 items-center justify-center rounded-full", getScoreColorClass(percentage), "text-primary-foreground")}>
+            <div className={cn("flex h-20 w-20 items-center justify-center rounded-full text-primary-foreground", getScoreBgColorClass(percentage))}>
               {score}
             </div>
           </div>
           <div className="w-full">
-            <CustomProgress value={percentage} className="h-4" indicatorClassName={getScoreColorClass(percentage)} />
+            <CustomProgress value={percentage} />
             <div className="flex justify-between text-xs text-muted-foreground mt-2">
                 <span>0</span>
                 <span>5</span>

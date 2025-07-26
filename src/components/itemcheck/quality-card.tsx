@@ -14,7 +14,7 @@ export function QualityCard({ listingQuality }: QualityCardProps) {
   const { score, reason, strengths, weaknesses, suggestions } = listingQuality;
 
   const chartData = [{ name: 'Quality', score: score }];
-  const chartColor = score >= 8 ? '#22c55e' : score >= 5 ? '#f59e0b' : '#ef4444';
+  const chartColor = score >= 8 ? 'hsl(var(--primary))' : score >= 5 ? '#f59e0b' : '#ef4444';
 
   return (
     <Card className="shadow-md">
@@ -50,7 +50,7 @@ export function QualityCard({ listingQuality }: QualityCardProps) {
         <div>
           {strengths.length > 0 && (
             <div className="mt-4">
-              <h4 className="font-semibold flex items-center gap-2 mb-2"><ThumbsUp className="h-4 w-4 text-green-500" />Strengths</h4>
+              <h4 className="font-semibold flex items-center gap-2 mb-2"><ThumbsUp className="h-4 w-4 text-primary" />Strengths</h4>
               <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
                 {strengths.map((item, i) => <li key={i}>{item}</li>)}
               </ul>
@@ -59,7 +59,7 @@ export function QualityCard({ listingQuality }: QualityCardProps) {
 
           {weaknesses.length > 0 && (
             <div className="mt-4">
-              <h4 className="font-semibold flex items-center gap-2 mb-2"><ThumbsDown className="h-4 w-4 text-red-500" />Weaknesses</h4>
+              <h4 className="font-semibold flex items-center gap-2 mb-2"><ThumbsDown className="h-4 w-4 text-destructive" />Weaknesses</h4>
               <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
                 {weaknesses.map((item, i) => <li key={i}>{item}</li>)}
               </ul>
@@ -68,7 +68,7 @@ export function QualityCard({ listingQuality }: QualityCardProps) {
           
           {suggestions.length > 0 && (
             <div className="mt-4">
-              <h4 className="font-semibold flex items-center gap-2 mb-2"><Sparkles className="h-4 w-4 text-blue-500" />Suggestions</h4>
+              <h4 className="font-semibold flex items-center gap-2 mb-2"><Sparkles className="h-4 w-4 text-accent" />Suggestions</h4>
               <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
                 {suggestions.map((item, i) => <li key={i}>{item}</li>)}
               </ul>

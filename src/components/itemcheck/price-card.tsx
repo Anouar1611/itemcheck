@@ -11,6 +11,9 @@ interface PriceCardProps {
 
 export function PriceCard({ priceFairness }: PriceCardProps) {
   const { isFair, marketValue, reason } = priceFairness;
+  
+  const badgeVariant = isFair ? 'default' : 'destructive';
+  const badgeClass = isFair ? 'bg-primary/20 text-primary-foreground' : 'bg-destructive/20 text-destructive-foreground';
 
   return (
     <Card className="shadow-md">
@@ -23,11 +26,11 @@ export function PriceCard({ priceFairness }: PriceCardProps) {
       <CardContent className="space-y-4">
         <div className="flex items-center gap-2">
           {isFair ? (
-            <CheckCircle className="h-6 w-6 text-green-600" />
+            <CheckCircle className="h-6 w-6 text-primary" />
           ) : (
-            <AlertTriangle className="h-6 w-6 text-yellow-600" />
+            <AlertTriangle className="h-6 w-6 text-yellow-500" />
           )}
-          <Badge variant={isFair ? 'default' : 'destructive'} className="text-base">
+          <Badge variant={badgeVariant} className={badgeClass}>
             {isFair ? 'Fair Price' : 'Potentially Unfair'}
           </Badge>
         </div>

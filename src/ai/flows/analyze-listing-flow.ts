@@ -1,3 +1,4 @@
+
 /**
  * @fileOverview A Genkit flow for analyzing an online marketplace listing.
  *
@@ -7,6 +8,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
+import { ebaySearchTool } from '../tools/ebay-search-tool';
 
 const ScoreAndReasonSchema = z.object({
   score: z
@@ -87,9 +89,10 @@ const analyzeListingPrompt = ai.definePrompt({
   name: 'analyzeListingPrompt',
   input: { schema: AnalyzeListingInputSchema },
   output: { schema: AnalyzeListingOutputSchema },
+  tools: [ebaySearchTool],
   prompt: `You are ItemCheck AI, an expert system for analyzing online marketplace listings. Your goal is to provide a comprehensive, objective analysis to help users make smarter purchasing decisions.
 
-Analyze the following listing based on the provided details.
+Analyze the following listing based on the provided details. Use the tools provided to search for comparable items to determine price fairness.
 
 **Listing Information:**
 - URL: {{{listingUrl}}}
@@ -113,8 +116,8 @@ Perform a detailed analysis and provide the output *strictly* in the required JS
     - Provide specific strengths, weaknesses, and actionable suggestions for improvement.
 
 3.  **Check Price Fairness**:
-    - Based on the item's description, brand, model, and condition, determine if the price is fair.
-    - State the estimated market value or a reasonable price range.
+    - Based on the item's description, brand, model, and condition, determine if the price is fair by using the provided search tool to find comparable listings.
+    - State the estimated market value or a reasonable price range based on the search results.
     - Provide a clear reason for your assessment (e.g., "Priced appropriately for a used item with minor wear," or "Overpriced compared to new models.").
 
 4.  **Evaluate Seller Reliability (Score: 0-10)**:
