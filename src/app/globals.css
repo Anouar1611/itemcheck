@@ -4,86 +4,84 @@
 
 @layer base {
   :root {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
+    --background: 224 71% 4%; /* Very Dark Blue */
+    --foreground: 210 40% 98%; /* Almost White */
 
-    --card: 240 10% 10%;
-    --card-foreground: 0 0% 90%;
+    --card: 224 71% 10%; /* Dark Blue, slightly lighter than background */
+    --card-foreground: 210 40% 90%; /* Light Grey for card text */
 
-    --popover: 240 10% 5%;
-    --popover-foreground: 0 0% 90%;
+    --popover: 224 71% 8%; 
+    --popover-foreground: 210 40% 90%;
 
-    /* Green for primary actions, evoking "buy", "go", "success" */
-    --primary: 142 76% 36%; 
-    --primary-foreground: 142 90% 96%;
+    --primary: 210 100% 60%; /* Bright Blue - accent for calls to action, charts */
+    --primary-foreground: 224 71% 10%; /* Dark text on primary buttons */
 
-    --secondary: 240 5% 26%;
-    --secondary-foreground: 0 0% 90%;
+    --secondary: 217 33% 17%; /* Dark Slate Blue - for secondary elements */
+    --secondary-foreground: 210 40% 80%;
 
-    --muted: 240 5% 15%;
-    --muted-foreground: 0 0% 65%;
+    --muted: 220 40% 20%; /* Muted Dark Blue - for borders, dividers, less important text */
+    --muted-foreground: 210 30% 65%; /* Greyish blue for muted text */
 
-    /* A calm blue for secondary accents */
-    --accent: 210 40% 56.1%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 260 100% 70%; /* Vibrant Purple/Violet - for highlights, secondary charts */
+    --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 62% 50%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 70% 50%; /* Deep Red for errors */
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 240 5% 18%;
-    --input: 240 5% 12%;
-    --ring: 142 76% 46%;
+    --border: 220 40% 18%; /* Darker border, slightly distinct from card */
+    --input: 220 40% 15%; /* Dark input background */
+    --ring: 210 100% 70%; /* Lighter blue for focus rings */
 
     --chart-1: hsl(var(--primary));
     --chart-2: hsl(var(--accent));
-    --chart-3: 180 70% 50%;
-    --chart-4: 30 80% 60%;
-    --chart-5: 300 70% 60%;
+    --chart-3: 180 70% 50%; /* Teal */
+    --chart-4: 30 80% 60%; /* Orange */
+    --chart-5: 300 70% 60%; /* Magenta */
     --radius: 0.5rem;
 
-    /* Sidebar specific colors */
-    --sidebar-background: 240 10% 7%;
-    --sidebar-foreground: 0 0% 85%;
-    --sidebar-primary: hsl(var(--primary));
-    --sidebar-primary-foreground: hsl(var(--primary-foreground));
-    --sidebar-accent: hsl(var(--accent));
+    /* Sidebar specific colors - ensure they match the dashboard aesthetic */
+    --sidebar-background: 224 71% 7%; /* Slightly darker than card for depth */
+    --sidebar-foreground: 210 40% 85%;
+    --sidebar-primary: hsl(var(--primary)); /* Match main primary */
+    --sidebar-primary-foreground: hsl(var(--primary-foreground)); /* Match main primary foreground */
+    --sidebar-accent: hsl(var(--accent)); /* Match main accent */
     --sidebar-accent-foreground: hsl(var(--accent-foreground));
-    --sidebar-border: 240 10% 12%;
+    --sidebar-border: 224 71% 12%; /* Border for sidebar elements, distinct */
     --sidebar-ring: hsl(var(--ring));
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 10%;
-    --card-foreground: 0 0% 90%;
-    --popover: 240 10% 5%;
-    --popover-foreground: 0 0% 90%;
-    --primary: 142 76% 36%;
-    --primary-foreground: 142 90% 96%;
-    --secondary: 240 5% 26%;
-    --secondary-foreground: 0 0% 90%;
-    --muted: 240 5% 15%;
-    --muted-foreground: 0 0% 65%;
-    --accent: 210 40% 56.1%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62% 50%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5% 18%;
-    --input: 240 5% 12%;
-    --ring: 142 76% 46%;
+    --background: 224 71% 4%;
+    --foreground: 210 40% 98%;
+    --card: 224 71% 10%;
+    --card-foreground: 210 40% 90%;
+    --popover: 224 71% 8%;
+    --popover-foreground: 210 40% 90%;
+    --primary: 210 100% 60%;
+    --primary-foreground: 224 71% 10%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 80%;
+    --muted: 220 40% 20%;
+    --muted-foreground: 210 30% 65%;
+    --accent: 260 100% 70%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 220 40% 18%;
+    --input: 220 40% 15%;
+    --ring: 210 100% 70%;
     --chart-1: hsl(var(--primary));
     --chart-2: hsl(var(--accent));
     --chart-3: 180 70% 50%;
     --chart-4: 30 80% 60%;
     --chart-5: 300 70% 60%;
-    --sidebar-background: 240 10% 7%;
-    --sidebar-foreground: 0 0% 85%;
+    --sidebar-background: 224 71% 7%;
+    --sidebar-foreground: 210 40% 85%;
     --sidebar-primary: hsl(var(--primary));
     --sidebar-primary-foreground: hsl(var(--primary-foreground));
     --sidebar-accent: hsl(var(--accent));
     --sidebar-accent-foreground: hsl(var(--accent-foreground));
-    --sidebar-border: 240 10% 12%;
+    --sidebar-border: 224 71% 12%;
     --sidebar-ring: hsl(var(--ring));
   }
 }
@@ -95,6 +93,7 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* Ensure links in sidebar and other areas use appropriate foreground colors */
   a {
     @apply text-primary hover:text-primary/80;
   }

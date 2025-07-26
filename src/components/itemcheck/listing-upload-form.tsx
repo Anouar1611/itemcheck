@@ -16,8 +16,6 @@ import type { AnalyzeListingOutput } from '@/ai/flows/analyze-listing-flow';
 import type { AnalyzeImageForDamageOutput } from '@/ai/flows/analyze-image-damage-flow';
 import { Loader2, ShoppingCart, UploadCloud, FileText, Image as ImageIcon, X } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { DamageReportCard } from './damage-report-card';
-
 
 const formSchemaText = z.object({
   listingUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
@@ -136,7 +134,7 @@ export function ListingUploadForm({
   };
 
   return (
-    <Card className="w-full shadow-lg border-border/60 bg-card/80">
+    <Card className="w-full shadow-lg border-border/60 bg-card">
       <CardHeader className="text-center">
         <ShoppingCart className="mx-auto h-12 w-12 text-primary" />
         <CardTitle className="text-3xl font-bold mt-2">
@@ -159,7 +157,7 @@ export function ListingUploadForm({
             </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="text" className="pt-4">
+          <TabsContent value="text" className="pt-6">
             <form onSubmit={textForm.handleSubmit(onTextSubmit)} className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="listingUrl">Listing URL (Optional)</Label>
@@ -197,14 +195,14 @@ export function ListingUploadForm({
                 {textForm.formState.errors.description && <p className="text-sm text-destructive">{textForm.formState.errors.description.message}</p>}
               </div>
 
-              <Button variant="accent" type="submit" className="w-full text-lg py-6" disabled={textForm.formState.isSubmitting}>
+              <Button variant="primary" type="submit" className="w-full text-lg py-6" disabled={textForm.formState.isSubmitting}>
                 {textForm.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {textForm.formState.isSubmitting ? 'Analyzing...' : 'Analyze Listing'}
               </Button>
             </form>
           </TabsContent>
 
-          <TabsContent value="image" className="pt-4">
+          <TabsContent value="image" className="pt-6">
              <form onSubmit={imageForm.handleSubmit(onImageSubmit)} className="space-y-6">
               <Controller
                 name="image"
@@ -268,7 +266,7 @@ export function ListingUploadForm({
                   </div>
                 )}
               />
-              <Button type="submit" variant="accent" className="w-full text-lg py-6" disabled={imageForm.formState.isSubmitting}>
+              <Button type="submit" variant="primary" className="w-full text-lg py-6" disabled={imageForm.formState.isSubmitting}>
                 {imageForm.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {imageForm.formState.isSubmitting ? 'Analyzing...' : 'Analyze for Damage'}
               </Button>

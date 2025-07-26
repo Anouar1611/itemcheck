@@ -14,10 +14,10 @@ export function QualityCard({ listingQuality }: QualityCardProps) {
   const { score, reason, strengths, weaknesses, suggestions } = listingQuality;
 
   const chartData = [{ name: 'Quality', score: score }];
-  const chartColor = score >= 8 ? 'hsl(var(--primary))' : score >= 5 ? '#f59e0b' : '#ef4444';
+  const chartColor = score >= 8 ? 'hsl(var(--primary))' : score >= 5 ? 'hsl(var(--chart-4))' : 'hsl(var(--destructive))';
 
   return (
-    <Card className="shadow-md">
+    <Card className="shadow-md bg-card">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <List className="text-primary" />

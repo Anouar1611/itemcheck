@@ -16,7 +16,7 @@ export function PriceCard({ priceFairness }: PriceCardProps) {
   const badgeClass = isFair ? 'bg-primary/20 text-primary-foreground' : 'bg-destructive/20 text-destructive-foreground';
 
   return (
-    <Card className="shadow-md">
+    <Card className="shadow-md bg-card">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Tag className="text-primary" />

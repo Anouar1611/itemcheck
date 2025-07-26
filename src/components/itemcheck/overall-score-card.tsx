@@ -49,7 +49,7 @@ export function OverallScoreCard({ overallScore }: OverallScoreCardProps) {
 
 
   return (
-    <Card className="shadow-lg bg-card/80 border-border/60">
+    <Card className="shadow-lg bg-card border-border/60">
       <CardHeader>
         <CardTitle className="text-2xl font-bold text-foreground">Overall Analysis</CardTitle>
         <CardDescription className="text-muted-foreground">{reason}</CardDescription>
