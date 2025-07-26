@@ -135,23 +135,13 @@ export function ListingUploadForm({
 
   return (
     <Card className="w-full shadow-lg border-border/60 bg-card overflow-hidden">
-      <CardHeader className="text-center p-6 relative h-48 flex flex-col justify-center items-center">
-        <Image 
-          src="https://placehold.co/1200x400.png"
-          alt="Abstract background"
-          layout="fill"
-          objectFit="cover"
-          className="absolute inset-0 z-0 opacity-20"
-          data-ai-hint="abstract purple tech"
-        />
-        <div className="relative z-10">
-            <CardTitle className="text-3xl font-bold">
-            Marketplace Listing Analyzer
-            </CardTitle>
-            <CardDescription className="text-lg text-muted-foreground mt-1">
-            Buy smarter. Get an instant AI-powered analysis of any listing.
-            </CardDescription>
-        </div>
+      <CardHeader className="text-center p-6 bg-card/50">
+        <CardTitle className="text-3xl font-bold">
+          Marketplace Listing Analyzer
+        </CardTitle>
+        <CardDescription className="text-lg text-muted-foreground mt-1">
+          Buy smarter. Get an instant AI-powered analysis of any listing.
+        </CardDescription>
       </CardHeader>
       <CardContent className="p-6">
         <Tabs defaultValue="text" className="w-full">
