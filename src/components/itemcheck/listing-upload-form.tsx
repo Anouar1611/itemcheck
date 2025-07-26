@@ -14,7 +14,7 @@ import { useToast } from '@/hooks/use-toast';
 import { handleAnalyzeListing, handleAnalyzeImageForDamage } from '@/app/actions';
 import type { AnalyzeListingOutput } from '@/ai/flows/analyze-listing-flow';
 import type { AnalyzeImageForDamageOutput } from '@/ai/flows/analyze-image-damage-flow';
-import { Loader2, ShoppingCart, UploadCloud, FileText, Image as ImageIcon, X } from 'lucide-react';
+import { Loader2, UploadCloud, FileText, Image as ImageIcon, X } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const formSchemaText = z.object({
@@ -134,15 +134,26 @@ export function ListingUploadForm({
   };
 
   return (
-    <Card className="w-full shadow-lg border-border/60 bg-card">
-      <CardHeader className="text-center">
-        <ShoppingCart className="mx-auto h-12 w-12 text-primary" />
-        <CardTitle className="text-3xl font-bold mt-2">
-          Marketplace Listing Analyzer
-        </CardTitle>
-        <CardDescription className="text-lg text-muted-foreground">
-          Buy smarter. Get an instant AI-powered analysis of any listing.
-        </CardDescription>
+    <Card className="w-full shadow-lg border-border/60 bg-card overflow-hidden">
+      <CardHeader className="text-center p-0">
+        <div className="relative h-48 w-full">
+            <Image 
+                src="https://placehold.co/600x400.png"
+                alt="Marketplace analysis illustration"
+                fill
+                className="object-cover"
+                data-ai-hint="futuristic abstract"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent" />
+        </div>
+        <div className="p-6 pt-4 relative">
+            <CardTitle className="text-3xl font-bold">
+            Marketplace Listing Analyzer
+            </CardTitle>
+            <CardDescription className="text-lg text-muted-foreground mt-1">
+            Buy smarter. Get an instant AI-powered analysis of any listing.
+            </CardDescription>
+        </div>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="text" className="w-full">
