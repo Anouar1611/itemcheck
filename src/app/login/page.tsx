@@ -50,11 +50,11 @@ export default function LoginPage() {
 
   return (
     <SidebarInset>
-      <div className="flex items-center justify-center min-h-full py-12 px-4 bg-gray-50 dark:bg-transparent">
+      <div className="flex items-center justify-center min-h-full py-12 px-4 bg-background">
         <Card className="w-full max-w-md shadow-xl bg-card border-border">
           <CardHeader className="text-center">
             <CardTitle className="text-3xl font-bold text-card-foreground">Welcome Back!</CardTitle>
-            <CardDescription className="text-muted-foreground">Sign in to access your Clarity AI account.</CardDescription>
+            <CardDescription className="text-muted-foreground">Sign in to access your ItemCheck AI account.</CardDescription>
           </CardHeader>
           <form onSubmit={handleLogin}>
             <CardContent className="space-y-6">
@@ -86,7 +86,7 @@ export default function LoginPage() {
               </div>
             </CardContent>
             <CardFooter className="flex flex-col gap-4">
-              <Button className="w-full text-lg py-6" type="submit" disabled={isLoading}>
+              <Button variant="accent" className="w-full text-lg py-6" type="submit" disabled={isLoading}>
                 {isLoading ? "Signing In..." : "Sign In"}
               </Button>
                             

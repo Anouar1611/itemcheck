@@ -11,8 +11,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Clarity AI',
-  description: 'AI-powered text and image analysis for bias and contradictions.',
+  title: 'ItemCheck AI',
+  description: 'AI-powered listing analysis for smarter, safer buying decisions.',
 };
 
 export default function RootLayout({
@@ -21,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="">
+    <html lang="en" className="dark">
       <body className={`${inter.variable} antialiased font-sans`}>
         <SidebarProvider defaultOpen>
           <DashboardSidebar />

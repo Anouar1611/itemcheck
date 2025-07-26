@@ -4,81 +4,84 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%; /* White */
-    --foreground: 222.2 84% 4.9%; /* Dark Slate Gray */
+    --background: 224 71% 4%; /* Very Dark Blue */
+    --foreground: 210 40% 98%; /* Almost White */
 
-    --card: 0 0% 100%; /* White */
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 224 71% 10%; /* Dark Blue, slightly lighter than background */
+    --card-foreground: 210 40% 90%; /* Light Grey for card text */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 224 71% 8%; 
+    --popover-foreground: 210 40% 90%;
 
-    --primary: 217.2 91.2% 59.8%; /* Bright Blue */
-    --primary-foreground: 210 40% 98%; /* White */
+    --primary: 210 100% 60%; /* Bright Blue - accent for calls to action, charts */
+    --primary-foreground: 224 71% 10%; /* Dark text on primary buttons */
 
-    --secondary: 210 40% 96.1%; /* Light Grayish Blue */
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217 33% 17%; /* Dark Slate Blue - for secondary elements */
+    --secondary-foreground: 210 40% 80%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%; /* Muted Gray */
+    --muted: 220 40% 20%; /* Muted Dark Blue - for borders, dividers, less important text */
+    --muted-foreground: 210 30% 65%; /* Greyish blue for muted text */
 
-    --accent: 210 40% 98%; /* Very Light Gray */
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 260 100% 70%; /* Vibrant Purple/Violet - for highlights, secondary charts */
+    --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 84.2% 60.2%; /* Red */
+    --destructive: 0 70% 50%; /* Deep Red for errors */
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%; /* Light Gray Border */
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 220 40% 18%; /* Darker border, slightly distinct from card */
+    --input: 220 40% 15%; /* Dark input background */
+    --ring: 210 100% 70%; /* Lighter blue for focus rings */
 
-    --radius: 0.5rem;
-    
     --chart-1: hsl(var(--primary));
-    --chart-2: 173 58% 39%; /* Teal */
-    --chart-3: 0 72% 51%; /* Orange-Red */
-    --chart-4: 45 93% 47%; /* Yellow */
-    --chart-5: 262 82% 57%; /* Purple */
+    --chart-2: hsl(var(--accent));
+    --chart-3: 180 70% 50%; /* Teal */
+    --chart-4: 30 80% 60%; /* Orange */
+    --chart-5: 300 70% 60%; /* Magenta */
+    --radius: 0.5rem;
 
     /* Sidebar specific colors - ensure they match the dashboard aesthetic */
-    --sidebar-background: 222.2 84% 4.9%; /* Dark Slate for contrast */
-    --sidebar-foreground: 210 40% 98%;
+    --sidebar-background: 224 71% 7%; /* Slightly darker than card for depth */
+    --sidebar-foreground: 210 40% 85%;
     --sidebar-primary: hsl(var(--primary)); /* Match main primary */
     --sidebar-primary-foreground: hsl(var(--primary-foreground)); /* Match main primary foreground */
-    --sidebar-accent: hsl(var(--secondary));
-    --sidebar-accent-foreground: 222.2 47.4% 11.2%;
-    --sidebar-border: 214.3 31.8% 91.4%;
+    --sidebar-accent: hsl(var(--accent)); /* Match main accent */
+    --sidebar-accent-foreground: hsl(var(--accent-foreground));
+    --sidebar-border: 224 71% 12%; /* Border for sidebar elements, distinct */
     --sidebar-ring: hsl(var(--ring));
   }
 
   .dark {
-     --background: 222.2 84% 4.9%;
+    --background: 224 71% 4%;
     --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
+    --card: 224 71% 10%;
+    --card-foreground: 210 40% 90%;
+    --popover: 224 71% 8%;
+    --popover-foreground: 210 40% 90%;
+    --primary: 210 100% 60%;
+    --primary-foreground: 224 71% 10%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 80%;
+    --muted: 220 40% 20%;
+    --muted-foreground: 210 30% 65%;
+    --accent: 260 100% 70%;
     --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 70% 50%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 217.2 91.2% 59.8%;
-
-    --sidebar-background: 222.2 84% 4.9%; /* Dark Slate for contrast */
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: hsl(var(--primary)); /* Match main primary */
-    --sidebar-primary-foreground: hsl(var(--primary-foreground)); /* Match main primary foreground */
-    --sidebar-accent: hsl(var(--secondary));
-    --sidebar-accent-foreground: 222.2 47.4% 11.2%;
-    --sidebar-border: 214.3 31.8% 91.4%;
+    --border: 220 40% 18%;
+    --input: 220 40% 15%;
+    --ring: 210 100% 70%;
+    --chart-1: hsl(var(--primary));
+    --chart-2: hsl(var(--accent));
+    --chart-3: 180 70% 50%;
+    --chart-4: 30 80% 60%;
+    --chart-5: 300 70% 60%;
+    --sidebar-background: 224 71% 7%;
+    --sidebar-foreground: 210 40% 85%;
+    --sidebar-primary: hsl(var(--primary));
+    --sidebar-primary-foreground: hsl(var(--primary-foreground));
+    --sidebar-accent: hsl(var(--accent));
+    --sidebar-accent-foreground: hsl(var(--accent-foreground));
+    --sidebar-border: 224 71% 12%;
     --sidebar-ring: hsl(var(--ring));
   }
 }
@@ -90,6 +93,7 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* Ensure links in sidebar and other areas use appropriate foreground colors */
   a {
     @apply text-primary hover:text-primary/80;
   }

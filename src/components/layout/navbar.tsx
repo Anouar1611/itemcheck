@@ -90,9 +90,6 @@ export default function Navbar() {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center space-x-1">
-          <NavLink href="/pricing" isActive={pathname === '/pricing'}>
-            <Tag className="mr-2 h-4 w-4" /> Pricing
-          </NavLink>
           {user ? (
             <>
               <Button variant="ghost" onClick={handleLogout} className="text-sm font-medium text-foreground hover:bg-muted/50">
@@ -134,9 +131,6 @@ export default function Navbar() {
                 </Link>
                 <NavLink href="/" onClick={closeMobileMenu} isActive={pathname === '/'}>
                   <ScanSearch className="mr-2 h-4 w-4" /> Analyze
-                </NavLink>
-                <NavLink href="/pricing" onClick={closeMobileMenu} isActive={pathname === '/pricing'}>
-                  <Tag className="mr-2 h-4 w-4" /> Pricing
                 </NavLink>
                 <hr className="my-2 border-border"/>
                 {user ? (

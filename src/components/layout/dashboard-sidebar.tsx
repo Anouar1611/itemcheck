@@ -11,7 +11,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { ScanSearch, Image, LogIn, UserPlus, Home, Settings, LogOut, PanelLeft } from 'lucide-react';
+import { ScanSearch, LogIn, UserPlus, Home, LogOut, PanelLeft, Tag } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { auth } from '@/lib/firebase';
 import { useEffect, useState } from 'react';
@@ -64,9 +64,9 @@ export function DashboardSidebar() {
         <Sidebar collapsible="icon" className="border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
             <SidebarHeader className="p-2 flex items-center justify-between">
                  {state === 'expanded' && (
-                    <Link href="/" className="flex items-center gap-2" aria-label="Clarity AI Home">
+                    <Link href="/" className="flex items-center gap-2" aria-label="ItemCheck AI Home">
                         <ScanSearch className="h-7 w-7 text-primary" />
-                        <h1 className="text-xl font-semibold">Clarity AI</h1>
+                        <h1 className="text-xl font-semibold">ItemCheck AI</h1>
                     </Link>
                  )}
                 <Button variant="ghost" size="icon" onClick={toggleSidebar} className="text-sidebar-foreground hover:text-sidebar-accent-foreground">
@@ -78,12 +78,12 @@ export function DashboardSidebar() {
   }
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-sidebar-border" variant="sidebar">
+    <Sidebar collapsible="icon" className="border-r border-sidebar-border bg-sidebar text-sidebar-foreground" variant="sidebar">
       <SidebarHeader className="p-2 flex items-center justify-between">
          {state === 'expanded' && (
-            <Link href="/" className="flex items-center gap-2" aria-label="Clarity AI Home">
+            <Link href="/" className="flex items-center gap-2" aria-label="ItemCheck AI Home">
                 <ScanSearch className="h-7 w-7 text-primary" />
-                <h1 className="text-xl font-semibold text-sidebar-foreground">Clarity AI</h1>
+                <h1 className="text-xl font-semibold text-sidebar-foreground">ItemCheck AI</h1>
             </Link>
          )}
         <Button variant="ghost" size="icon" onClick={toggleSidebar} className="text-sidebar-foreground hover:bg-sidebar-accent/50">

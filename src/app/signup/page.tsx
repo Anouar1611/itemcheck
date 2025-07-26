@@ -62,11 +62,11 @@ export default function SignupPage() {
 
   return (
     <SidebarInset>
-      <div className="flex items-center justify-center min-h-full py-12 px-4 bg-gray-50 dark:bg-transparent">
+      <div className="flex items-center justify-center min-h-full py-12 px-4 bg-background">
         <Card className="w-full max-w-md shadow-xl bg-card border-border">
           <CardHeader className="text-center">
             <CardTitle className="text-3xl font-bold text-card-foreground">Create an Account</CardTitle>
-            <CardDescription className="text-muted-foreground">Join Clarity AI to start analyzing content today.</CardDescription>
+            <CardDescription className="text-muted-foreground">Join ItemCheck AI to start analyzing listings today.</CardDescription>
           </CardHeader>
           <form onSubmit={handleSignup}>
             <CardContent className="space-y-6">
@@ -126,7 +126,7 @@ export default function SignupPage() {
               </div>
             </CardContent>
             <CardFooter className="flex flex-col gap-4">
-              <Button className="w-full text-lg py-6" type="submit" disabled={isLoading}>
+              <Button variant="accent" className="w-full text-lg py-6" type="submit" disabled={isLoading}>
                 {isLoading ? "Signing Up..." : "Sign Up"}
               </Button>
               <p className="text-center text-sm text-muted-foreground">
