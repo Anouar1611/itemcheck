@@ -11,14 +11,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { handleAnalyzeListing, handleAnalyzeImageForDamage } from '@/app/actions';
-import type { AnalyzeListingOutput } from '@/ai/flows/analyze-listing-flow';
-import type { AnalyzeImageForDamageOutput } from '@/ai/flows/analyze-image-damage-flow';
-import { Loader2, UploadCloud, Tag, X } from 'lucide-react';
+import { handleAnalyzeOrSearch } from '@/app/actions';
+import type { AnalyzeOrSearchOutput } from '@/ai/flows/analyze-or-search-flow';
+import { Loader2, UploadCloud, Tag, X, Search, Microscope } from 'lucide-react';
 
 const formSchema = z.object({
+  query: z.string().min(3, 'Please enter at least 3 characters.'),
   listingUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal('')),
-  description: z.string().min(20, 'Please enter at least 20 characters for the description.'),
   image: z
     .any()
     .optional()
@@ -32,15 +31,13 @@ type FormData = z.infer<typeof formSchema>;
 
 interface ListingUploadFormProps {
   setIsLoading: (isLoading: boolean) => void;
-  setAnalysisResult: (result: AnalyzeListingOutput | null) => void;
-  setDamageReport: (report: AnalyzeImageForDamageOutput | null) => void;
+  setAnalysisResult: (result: AnalyzeOrSearchOutput | null) => void;
   setError: (error: string | null) => void;
 }
 
 export function ListingUploadForm({
   setIsLoading,
   setAnalysisResult,
-  setDamageReport,
   setError,
 }: ListingUploadFormProps) {
   const { toast } = useToast();
@@ -49,8 +46,8 @@ export function ListingUploadForm({
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      query: '',
       listingUrl: '',
-      description: '',
       image: null,
     },
   });
@@ -77,7 +74,6 @@ export function ListingUploadForm({
   const onSubmit = async (data: FormData) => {
     setIsLoading(true);
     setAnalysisResult(null);
-    setDamageReport(null);
     setError(null);
 
     let imagePayloadForApi: string | undefined = undefined;
@@ -97,19 +93,12 @@ export function ListingUploadForm({
     }
 
     try {
-      // If only an image is provided, run damage analysis.
-      if (imagePayloadForApi && !data.description) {
-         const result = await handleAnalyzeImageForDamage({ image: imagePayloadForApi });
-         setDamageReport(result);
-      } else {
-        // Otherwise, run the comprehensive listing analysis.
-        const result = await handleAnalyzeListing({
+        const result = await handleAnalyzeOrSearch({
+            query: data.query,
             listingUrl: data.listingUrl,
-            description: data.description,
             image: imagePayloadForApi,
         });
         setAnalysisResult(result);
-      }
     } catch (e: any) {
       const errorMessage = e.message || 'An unexpected error occurred.';
       setError(errorMessage);
@@ -125,15 +114,40 @@ export function ListingUploadForm({
         <div className="flex justify-center items-center gap-3">
           <Tag className="h-10 w-10 text-primary" />
           <CardTitle className="text-3xl font-bold">
-            Used Item Analyzer
+            ItemCheck AI
           </CardTitle>
         </div>
         <CardDescription className="text-lg text-muted-foreground mt-2">
-          Get an instant AI analysis of any used item listing.
+         Your all-in-one shopping assistant.
         </CardDescription>
       </CardHeader>
       <CardContent className="p-6">
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+
+             <div className="space-y-2">
+            <Label htmlFor="query">Product Name or Listing Description</Label>
+            <Controller
+                name="query"
+                control={form.control}
+                render={({ field }) => (
+                <Textarea
+                    {...field}
+                    id="query"
+                    placeholder="Enter a product like 'Sony WH-1000XM5 headphones' OR paste a full item description..."
+                    className={`min-h-[150px] text-base resize-y bg-input ${form.formState.errors.query ? 'border-destructive' : ''}`}
+                    disabled={form.formState.isSubmitting}
+                />
+                )}
+            />
+             <p className="text-sm text-muted-foreground">
+                <Search className="inline-block h-4 w-4 mr-1" />
+                For a **product search**, enter a product name. <br />
+                <Microscope className="inline-block h-4 w-4 mr-1" />
+                For a **listing analysis**, paste the full description.
+             </p>
+            {form.formState.errors.query && <p className="text-sm text-destructive">{form.formState.errors.query.message}</p>}
+            </div>
+
             <div className="space-y-2">
             <Label htmlFor="listingUrl">Listing URL (Optional)</Label>
             <Controller
@@ -143,7 +157,7 @@ export function ListingUploadForm({
                 <Input
                     {...field}
                     id="listingUrl"
-                    placeholder="https://www.ebay.com/itm/..."
+                    placeholder="https://www.ebay.com/itm/... (Recommended for listing analysis)"
                     className="bg-input"
                     disabled={form.formState.isSubmitting}
                 />
@@ -152,24 +166,6 @@ export function ListingUploadForm({
             {form.formState.errors.listingUrl && <p className="text-sm text-destructive">{form.formState.errors.listingUrl.message}</p>}
             </div>
 
-            <div className="space-y-2">
-            <Label htmlFor="description">Listing Description</Label>
-            <Controller
-                name="description"
-                control={form.control}
-                render={({ field }) => (
-                <Textarea
-                    {...field}
-                    id="description"
-                    placeholder="Copy and paste the full item description here..."
-                    className={`min-h-[150px] text-base resize-y bg-input ${form.formState.errors.description ? 'border-destructive' : ''}`}
-                    disabled={form.formState.isSubmitting}
-                />
-                )}
-            />
-             <p className="text-sm text-muted-foreground">For a full analysis, provide the description. To only check for image damage, just upload an image.</p>
-            {form.formState.errors.description && <p className="text-sm text-destructive">{form.formState.errors.description.message}</p>}
-            </div>
 
              <div className="space-y-2">
                 <Label htmlFor="image-file">Upload Image (Optional)</Label>
@@ -240,7 +236,7 @@ export function ListingUploadForm({
 
             <Button variant="primary" type="submit" className="w-full text-lg py-6" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {form.formState.isSubmitting ? 'Analyzing...' : 'Analyze Item'}
+                {form.formState.isSubmitting ? 'Analyzing...' : 'Analyze'}
             </Button>
         </form>
       </CardContent>

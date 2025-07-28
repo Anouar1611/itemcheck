@@ -15,6 +15,11 @@ import {
   type ProductSearchInput,
   type ProductSearchOutput,
 } from '@/ai/flows/product-search-and-analysis-flow';
+import {
+  analyzeOrSearch,
+  type AnalyzeOrSearchInput,
+  type AnalyzeOrSearchOutput,
+} from '@/ai/flows/analyze-or-search-flow';
 
 export async function handleAnalyzeListing(
   input: AnalyzeListingInput
@@ -51,5 +56,17 @@ export async function handleProductSearch(
     throw new Error(
       'Failed to perform product search and analysis. Please try again.'
     );
+  }
+}
+
+export async function handleAnalyzeOrSearch(
+  input: AnalyzeOrSearchInput
+): Promise<AnalyzeOrSearchOutput> {
+  try {
+    const result = await analyzeOrSearch(input);
+    return result;
+  } catch (error) {
+    console.error('Error in unified analysis/search:', error);
+    throw new Error('Failed to complete your request. Please try again.');
   }
 }
