@@ -11,7 +11,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { LogIn, UserPlus, Home, LogOut, PanelLeft, Tag } from 'lucide-react';
+import { LogIn, UserPlus, Home, LogOut, PanelLeft, Tag, Search } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { auth } from '@/lib/firebase';
 import { useEffect, useState } from 'react';
@@ -95,8 +95,15 @@ export function DashboardSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <Link href="/" legacyBehavior passHref>
-              <SidebarMenuButton asChild isActive={pathname === '/'} tooltip={state === 'collapsed' ? 'Analyzer' : undefined}>
-                <a><NavLinkContent icon={<Home size={18}/>} label="Analyzer"/></a>
+              <SidebarMenuButton asChild isActive={pathname === '/'} tooltip={state === 'collapsed' ? 'Listing Analyzer' : undefined}>
+                <a><NavLinkContent icon={<Home size={18}/>} label="Listing Analyzer"/></a>
+              </SidebarMenuButton>
+            </Link>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <Link href="/search" legacyBehavior passHref>
+              <SidebarMenuButton asChild isActive={pathname === '/search'} tooltip={state === 'collapsed' ? 'Product Search' : undefined}>
+                <a><NavLinkContent icon={<Search size={18}/>} label="Product Search"/></a>
               </SidebarMenuButton>
             </Link>
           </SidebarMenuItem>

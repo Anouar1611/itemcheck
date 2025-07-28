@@ -10,6 +10,11 @@ import {
   type AnalyzeImageForDamageInput,
   type AnalyzeImageForDamageOutput,
 } from '@/ai/flows/analyze-image-damage-flow';
+import {
+  productSearchAndAnalysis,
+  type ProductSearchInput,
+  type ProductSearchOutput,
+} from '@/ai/flows/product-search-and-analysis-flow';
 
 export async function handleAnalyzeListing(
   input: AnalyzeListingInput
@@ -32,5 +37,19 @@ export async function handleAnalyzeImageForDamage(
   } catch (error) {
     console.error('Error analyzing image for damage:', error);
     throw new Error('Failed to analyze image. Please try again.');
+  }
+}
+
+export async function handleProductSearch(
+  input: ProductSearchInput
+): Promise<ProductSearchOutput> {
+  try {
+    const result = await productSearchAndAnalysis(input);
+    return result;
+  } catch (error) {
+    console.error('Error in product search and analysis:', error);
+    throw new Error(
+      'Failed to perform product search and analysis. Please try again.'
+    );
   }
 }
