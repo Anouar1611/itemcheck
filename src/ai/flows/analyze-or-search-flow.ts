@@ -1,6 +1,6 @@
 /**
- * @fileOverview A meta Genkit flow that determines user intent and routes
- * to either a listing analysis or a product search.
+ * @fileOverview A meta Genkit flow that determines user intent, routes
+ * to the appropriate analysis, and saves the result to Firestore.
  */
 
 import { ai } from '@/ai/genkit';
@@ -15,6 +15,9 @@ import {
   ProductSearchInputSchema,
   ProductSearchOutputSchema,
 } from './product-search-and-analysis-flow';
+import { auth } from '@/lib/firebase';
+import { db } from '@/lib/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 export const AnalyzeOrSearchInputSchema = z.object({
   query: z
@@ -38,6 +41,8 @@ export const AnalyzeOrSearchOutputSchema = z.object({
   analysisType: z.enum(['listing', 'search']),
   listingAnalysis: AnalyzeListingOutputSchema.optional(),
   productSearch: ProductSearchOutputSchema.optional(),
+  // Add query back into the output so it can be saved to history
+  query: z.string().optional(),
 });
 export type AnalyzeOrSearchOutput = z.infer<
   typeof AnalyzeOrSearchOutputSchema
@@ -67,6 +72,26 @@ User Input:
 Based on the user input, is the primary intent 'analysis' or 'search'?`,
 });
 
+// Helper function to save results to Firestore
+async function saveToHistory(result: AnalyzeOrSearchOutput) {
+  const user = auth.currentUser;
+  if (!user) {
+    console.log("User not logged in. Skipping save to history.");
+    return;
+  }
+  try {
+    const historyCollection = collection(db, `userHistory/${user.uid}/analyses`);
+    await addDoc(historyCollection, {
+      ...result,
+      createdAt: serverTimestamp(), // Use server timestamp for consistency
+    });
+    console.log('Successfully saved analysis to user history.');
+  } catch (error) {
+    console.error("Error saving to Firestore: ", error);
+  }
+}
+
+
 const analyzeOrSearchFlow = ai.defineFlow(
   {
     name: 'analyzeOrSearchFlow',
@@ -74,9 +99,8 @@ const analyzeOrSearchFlow = ai.defineFlow(
     outputSchema: AnalyzeOrSearchOutputSchema,
   },
   async (input) => {
-    // If a URL is provided or the description is very long, it's definitely a listing analysis.
-    // Length check helps differentiate between "Vintage leather jacket, size medium, some scuffs" (analysis)
-    // and "leather jacket" (search).
+    let result: AnalyzeOrSearchOutput;
+
     if (input.listingUrl || input.query.length > 50) {
       console.log('Performing listing analysis due to URL or query length.');
       const listingResult = await analyzeListing({
@@ -84,35 +108,42 @@ const analyzeOrSearchFlow = ai.defineFlow(
         listingUrl: input.listingUrl,
         image: input.image,
       });
-      return {
+      result = {
         analysisType: 'listing',
         listingAnalysis: listingResult,
-      };
-    }
-
-    // If the input is shorter, use an AI prompt to determine the intent.
-    const { output } = await intentPrompt({ query: input.query });
-    const intent = output?.intent;
-
-    if (intent === 'analysis') {
-      console.log('Intent determined as "analysis".');
-      const listingResult = await analyzeListing({
-        description: input.query,
-        image: input.image,
-      });
-      return {
-        analysisType: 'listing',
-        listingAnalysis: listingResult,
+        query: input.query,
       };
     } else {
-      console.log('Intent determined as "search".');
-      const searchResult = await productSearchAndAnalysis({
-        query: input.query,
-      });
-      return {
-        analysisType: 'search',
-        productSearch: searchResult,
-      };
+      const { output } = await intentPrompt({ query: input.query });
+      const intent = output?.intent;
+
+      if (intent === 'analysis') {
+        console.log('Intent determined as "analysis".');
+        const listingResult = await analyzeListing({
+          description: input.query,
+          image: input.image,
+        });
+        result = {
+          analysisType: 'listing',
+          listingAnalysis: listingResult,
+          query: input.query,
+        };
+      } else {
+        console.log('Intent determined as "search".');
+        const searchResult = await productSearchAndAnalysis({
+          query: input.query,
+        });
+        result = {
+          analysisType: 'search',
+          productSearch: searchResult,
+          query: input.query,
+        };
+      }
     }
+    
+    // Asynchronously save the result to Firestore without blocking the response
+    await saveToHistory(result);
+    
+    return result;
   }
 );

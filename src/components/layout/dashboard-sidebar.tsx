@@ -11,7 +11,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { LogIn, UserPlus, Home, LogOut, PanelLeft, Tag } from 'lucide-react';
+import { LogIn, UserPlus, Home, LogOut, PanelLeft, Tag, History } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { auth } from '@/lib/firebase';
 import { useEffect, useState } from 'react';
@@ -100,6 +100,15 @@ export function DashboardSidebar() {
               </SidebarMenuButton>
             </Link>
           </SidebarMenuItem>
+           {user && (
+            <SidebarMenuItem>
+              <Link href="/history" legacyBehavior passHref>
+                <SidebarMenuButton asChild isActive={pathname.startsWith('/history')} tooltip={state === 'collapsed' ? 'History' : undefined}>
+                  <a><NavLinkContent icon={<History size={18}/>} label="History"/></a>
+                </SidebarMenuButton>
+              </Link>
+            </SidebarMenuItem>
+          )}
         </SidebarMenu>
       </SidebarContent>
 
